@@ -1,0 +1,23 @@
+== JBoss Forge Swagger Addon
+ 
+        
+=== Dependencies: None 
+ 
+
+=== Setup
+
+No setup is required
+
+=== Usage 
+
+Invoke *Swagger: Setup* command.
+
+Invoke *Swagger: Generate* command.
+
+=== Features
+
+* Configures maven plugin to generate REST api based on http://swagger.io/[Swagger^] specification. 
+* Added swagger-ui artifacts to webapp 
+
+
+ 
