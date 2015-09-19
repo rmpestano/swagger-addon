@@ -17,7 +17,8 @@ Invoke *Swagger: Generate* command.
 === Features
 
 * Configures maven plugin to generate REST api based on http://swagger.io/[Swagger^] specification. 
-* Added swagger-ui artifacts to webapp 
+* Adds swagger-ui artifacts 
+* Generates swagger spec files based on JaxRS annotation through https://github.com/teamcarma/swagger-jaxrs-doclet[carma swagger doclet^].  
 
 
  
