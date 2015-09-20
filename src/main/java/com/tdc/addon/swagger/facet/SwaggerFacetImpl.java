@@ -1,7 +1,6 @@
 package com.tdc.addon.swagger.facet;
 
 import com.tdc.addon.swagger.config.SwaggerConfiguration;
-import java.util.Iterator;
 import java.util.Properties;
 import javax.inject.Inject;
 
@@ -20,22 +19,22 @@ import org.jboss.forge.addon.maven.projects.MavenFacet;
 import org.jboss.forge.addon.maven.projects.MavenPluginFacet;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.facets.MetadataFacet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * The implementation of the {@link WildflySwarmFacet}
+ * The implementation of the {@link SwaggerFacet}
  *
- * @author <a href="mailto:ggastald@redhat.com">George Gastaldi</a>
- * @author <a href="mailto:antonio.goncalves@gmail.com">Antonio Goncalves</a>
+ * @author <a href="mailto:rmpestano@gmail.com">Rafael Pestano</a>
  */
 public class SwaggerFacetImpl extends AbstractFacet<Project> implements
         SwaggerFacet {
 
+    public static final String SWAGGER_DOCLET_EXECUTION_ID = "generate-service-docs";
+
+    private static final String SWAGGER_DOCLET_VERSION_PROPERTY = "version.swagger-doclet";
+    
     @Inject
     private SwaggerConfiguration configuration;
 
-    private static final String SWAGGER_DOCLET_VERSION_PROPERTY = "version.swagger-doclet";
 
     public static final Coordinate JAVADOC_PLUGIN_COORDINATE = CoordinateBuilder
             .create().setGroupId("org.apache.maven.plugins")
@@ -46,6 +45,7 @@ public class SwaggerFacetImpl extends AbstractFacet<Project> implements
     public boolean install() {
         addSwaggerDocletVersionProperty();
         addMavenPlugin();
+        //TODO copy resources (swagger artifacts)
         return isInstalled();
     }
 
@@ -68,12 +68,15 @@ public class SwaggerFacetImpl extends AbstractFacet<Project> implements
                 setConfig(ConfigurationBuilder.create().
                         addConfigurationElement(getDocletConfig()).
                         addConfigurationElement(getDocletArtifact()).
+                        addConfigurationElement(getOutputDir()).
+                        addConfigurationElement(ConfigurationElementBuilder.create().setName("useStandardDocletOptions")
+                        .setText("false")).
                         addConfigurationElement(getAddidionalParam()))
         );
 
-        if(pluginFacet.hasPlugin(JAVADOC_PLUGIN_COORDINATE)){
+        if (pluginFacet.hasPlugin(JAVADOC_PLUGIN_COORDINATE)) {
             pluginFacet.updatePlugin(javadocSwaggerPlugin);
-        } else{
+        } else {
             pluginFacet.addPlugin(javadocSwaggerPlugin);
         }
     }
@@ -82,18 +85,19 @@ public class SwaggerFacetImpl extends AbstractFacet<Project> implements
         MavenFacet maven = getFaceted().getFacet(MavenFacet.class);
         Model pom = maven.getModel();
         Properties properties = pom.getProperties();
-        if(!properties.contains(SWAGGER_DOCLET_VERSION_PROPERTY)){
-             // TODO: Fetch the latest version
-        properties.setProperty(SWAGGER_DOCLET_VERSION_PROPERTY, "1.1.1");
-        maven.setModel(pom);
+        if (!properties.contains(SWAGGER_DOCLET_VERSION_PROPERTY)) {
+            // TODO: Fetch the latest version
+            properties.setProperty(SWAGGER_DOCLET_VERSION_PROPERTY, "1.1.1");
+            maven.setModel(pom);
         }
-       
+
     }
+
     @Override
     public boolean isInstalled() {
         MavenPluginFacet facet = getFaceted().getFacet(MavenPluginFacet.class);
-        return facet.hasPlugin(JAVADOC_PLUGIN_COORDINATE) && 
-                hasSwaggerDocletExecution(facet.getPlugin(JAVADOC_PLUGIN_COORDINATE));
+        return facet.hasPlugin(JAVADOC_PLUGIN_COORDINATE)
+                && hasSwaggerDocletExecution(facet.getPlugin(JAVADOC_PLUGIN_COORDINATE));
     }
 
     @Override
@@ -126,19 +130,27 @@ public class SwaggerFacetImpl extends AbstractFacet<Project> implements
     private ConfigurationElement getAddidionalParam() {
         String projectName = getFaceted().getFacet(MetadataFacet.class).getProjectName();
         StringBuilder value = new StringBuilder(103);
-        value.append("apiVersion 1").append("\n\t\t-docBasePath ").append(configuration.getDocBaseDir() == null ? "src/main/webapp/apidocs" : configuration.getDocBaseDir())
+        value.append("-apiVersion 1").append("\n\t\t-docBasePath ").append(configuration.getDocBaseDir() == null ? projectName+"/apidocs" : configuration.getDocBaseDir())
                 .append("\n\t\t-apiBasePath ").append(configuration.getApiBasePath() == null ? projectName + "/rest" : configuration.getApiBasePath())
-                .append("\n\t\t-swaggerUiPath ${project.build.directory}/\n\t\t");//we will patch swagger ui inside forge addon so no need to use the one bundled with swagger-doclet
+                .append("\n\t\t-swaggerUiPath ${project.build.directory}/");//we will patch swagger ui inside forge addon so no need to use the one bundled with swagger-doclet
         return ConfigurationElementBuilder.create().setName("additionalparam")
-                .setText(value.toString());
+                .setText(value.toString()+" \n\t\t");
     }
 
     private boolean hasSwaggerDocletExecution(MavenPlugin plugin) {
         for (Execution exec : plugin.listExecutions()) {
-            if(exec.getId().equals("generate-service-docs")){
+            if (exec.getId().equals(SWAGGER_DOCLET_EXECUTION_ID)) {
                 return true;
             }
         }
         return false;
     }
+
+    private ConfigurationElement getOutputDir() {
+                //TODO it must be configurable
+                return ConfigurationElementBuilder.create().setName("reportOutputDirectory")
+                .setText("src/main/webapp");
+    }
+     
+ 
 }

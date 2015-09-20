@@ -14,13 +14,17 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.inject.Inject;
+import org.apache.maven.model.PluginExecution;
+import org.codehaus.plexus.util.xml.Xpp3Dom;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.forge.addon.facets.FacetFactory;
 import org.jboss.forge.addon.maven.plugins.MavenPluginAdapter;
 import org.jboss.forge.addon.maven.projects.MavenPluginFacet;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.ProjectFactory;
+import org.jboss.forge.addon.projects.facets.MetadataFacet;
 import org.jboss.forge.addon.shell.test.ShellTest;
 import org.jboss.forge.addon.ui.command.AbstractCommandExecutionListener;
 import org.jboss.forge.addon.ui.command.UICommand;
@@ -31,11 +35,11 @@ import org.jboss.forge.addon.ui.result.Failed;
 import org.jboss.forge.addon.ui.result.Result;
 import org.jboss.forge.addon.ui.test.UITestHarness;
 import org.jboss.forge.arquillian.AddonDependencies;
-import org.jboss.forge.arquillian.AddonDependency;
 import org.jboss.forge.arquillian.archive.AddonArchive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -43,13 +47,16 @@ import org.junit.runner.RunWith;
 public class SwaggerSetupCommandTest {
 
     @Deployment
-    @AddonDependencies 
+    @AddonDependencies
     public static AddonArchive getDeployment() {
-        return ShrinkWrap.create(AddonArchive.class).addBeansXML().addPackages(true,"com.tdc.addon.swagger");
+        return ShrinkWrap.create(AddonArchive.class).addBeansXML().addPackages(true, "com.tdc.addon.swagger");
     }
 
     @Inject
     private ProjectFactory projectFactory;
+
+    @Inject
+    private FacetFactory facetFactory;
 
     @Inject
     private UITestHarness uiTestHarness;
@@ -62,8 +69,9 @@ public class SwaggerSetupCommandTest {
     @Before
     public void setUp() {
         project = projectFactory.createTempProject();
+        facetFactory.install(project, SwaggerFacet.class);
     }
-
+    
     @Test
     public void checkCommandMetadata() throws Exception {
         try (CommandController controller = uiTestHarness.createCommandController(SwaggerSetupCommand.class,
@@ -75,11 +83,9 @@ public class SwaggerSetupCommandTest {
             assertEquals("Swagger: Setup", metadata.getName());
             assertEquals("Swagger", metadata.getCategory().getName());
             assertNull(metadata.getCategory().getSubCategory());
-            assertEquals(4, controller.getInputs().size());
+            assertEquals(2, controller.getInputs().size());
             assertFalse(controller.hasInput("fake input"));
-            assertTrue(controller.hasInput("outputDir"));
-            assertTrue(controller.hasInput("contextPath"));
-            assertTrue(controller.hasInput("docBasePath"));
+            assertTrue(controller.hasInput("docBaseDir"));
             assertTrue(controller.hasInput("apiBasePath"));
         }
     }
@@ -94,7 +100,8 @@ public class SwaggerSetupCommandTest {
     }
 
     @Test
-    public void testWildflySwarmSetup() throws Exception {
+    public void testSwaggerSetup() throws Exception {
+        facetFactory.install(project, SwaggerFacet.class);
         try (CommandController controller = uiTestHarness.createCommandController(SwaggerSetupCommand.class,
                 project.getRoot())) {
             controller.initialize();
@@ -113,30 +120,30 @@ public class SwaggerSetupCommandTest {
             SwaggerFacet facet = project.getFacet(SwaggerFacet.class);
             Assert.assertTrue(facet.isInstalled());
 
-            MavenPluginAdapter swarmPlugin = (MavenPluginAdapter) project.getFacet(MavenPluginFacet.class)
+            MavenPluginAdapter swaggerPlugin = (MavenPluginAdapter) project.getFacet(MavenPluginFacet.class)
                     .getEffectivePlugin(SwaggerFacetImpl.JAVADOC_PLUGIN_COORDINATE);
-            Assert.assertEquals("swagger-plugin", swarmPlugin.getCoordinate().getArtifactId());
-            Assert.assertEquals(1, swarmPlugin.getExecutions().size());
-            Assert.assertEquals(1, swarmPlugin.getConfig().listConfigurationElements().size());
-            Assert.assertEquals("empty-project", swarmPlugin.getConfig().getConfigurationElement("contextPath").getText());
+            Assert.assertEquals("maven-javadoc-plugin", swaggerPlugin.getCoordinate().getArtifactId());
+            Assert.assertEquals(1, swaggerPlugin.getExecutions().size());
+            PluginExecution exec = swaggerPlugin.getExecutions().get(0);
+            assertEquals(exec.getId(), SwaggerFacetImpl.SWAGGER_DOCLET_EXECUTION_ID);
         }
     }
 
     @Test
-    public void testWildflySwarmSetupWithParameters() throws Exception {
+    public void testSwaggerSetupWithParameters() throws Exception {
+        facetFactory.install(project, SwaggerFacet.class);
         try (CommandController controller = uiTestHarness.createCommandController(SwaggerSetupCommand.class,
                 project.getRoot())) {
             controller.initialize();
-            controller.setValueFor("httpPort", 4242);
-            controller.setValueFor("contextPath", "root");
-            controller.setValueFor("portOffset", 42);
+            controller.setValueFor("docBaseDir", "/apidocs");
+            controller.setValueFor("apiBasePath", "/rest");
             Assert.assertTrue(controller.isValid());
 
             final AtomicBoolean flag = new AtomicBoolean();
             controller.getContext().addCommandExecutionListener(new AbstractCommandExecutionListener() {
                 @Override
                 public void postCommandExecuted(UICommand command, UIExecutionContext context, Result result) {
-                    if (result.getMessage().equals("Wildfly Swarm is now set up! Enjoy!")) {
+                    if (result.getMessage().equals("Swagger setup completed successfully!")) {
                         flag.set(true);
                     }
                 }
@@ -146,32 +153,42 @@ public class SwaggerSetupCommandTest {
             SwaggerFacet facet = project.getFacet(SwaggerFacet.class);
             Assert.assertTrue(facet.isInstalled());
 
-            MavenPluginAdapter swarmPlugin = (MavenPluginAdapter) project.getFacet(MavenPluginFacet.class)
+            MavenPluginAdapter swaggerPlugin = (MavenPluginAdapter) project.getFacet(MavenPluginFacet.class)
                     .getEffectivePlugin(SwaggerFacetImpl.JAVADOC_PLUGIN_COORDINATE);
-            Assert.assertEquals("swagger-plugin", swarmPlugin.getCoordinate().getArtifactId());
-            Assert.assertEquals(1, swarmPlugin.getExecutions().size());
-            Assert.assertEquals(3, swarmPlugin.getConfig().listConfigurationElements().size());
-            Assert.assertEquals("4242", swarmPlugin.getConfig().getConfigurationElement("httpPort").getText());
-            Assert.assertEquals("root", swarmPlugin.getConfig().getConfigurationElement("contextPath").getText());
-            Assert.assertEquals("42", swarmPlugin.getConfig().getConfigurationElement("portOffset").getText());
+            Assert.assertEquals("maven-javadoc-plugin", swaggerPlugin.getCoordinate().getArtifactId());
+            Assert.assertEquals(1, swaggerPlugin.getExecutions().size());
+            PluginExecution exec = swaggerPlugin.getExecutions().get(0);
+            assertEquals(exec.getId(), SwaggerFacetImpl.SWAGGER_DOCLET_EXECUTION_ID);
+            Xpp3Dom execConfig = (Xpp3Dom) exec.getConfiguration();
+            assertEquals(execConfig.getChildCount(), 5);
+            assertEquals(execConfig.getChild("doclet").getValue(), "com.carma.swagger.doclet.ServiceDoclet");
+            String projectName = project.getFacet(MetadataFacet.class).getProjectName();
+            assertEquals(execConfig.getChild("additionalparam").getValue(),"-apiVersion 1\n" +
+"		-docBasePath "
+                    + projectName
+                    + "/apidocs\n" +
+"		-apiBasePath "
+                    +  projectName
+                    + "/rest\n" +
+"		-swaggerUiPath ${project.build.directory}/");
         }
     }
 
     @Test
-    public void testWildflySwarmSetupWithNullParameters() throws Exception {
+    public void testSwaggerSetupWithNullParameters() throws Exception {
+        facetFactory.install(project, SwaggerFacet.class);
         try (CommandController controller = uiTestHarness.createCommandController(SwaggerSetupCommand.class,
                 project.getRoot())) {
             controller.initialize();
-            controller.setValueFor("httpPort", null);
-            controller.setValueFor("contextPath", null);
-            controller.setValueFor("portOffset", null);
+            controller.setValueFor("docBaseDir", null);
+            controller.setValueFor("apiBasePath", null);
             Assert.assertTrue(controller.isValid());
 
             final AtomicBoolean flag = new AtomicBoolean();
             controller.getContext().addCommandExecutionListener(new AbstractCommandExecutionListener() {
                 @Override
                 public void postCommandExecuted(UICommand command, UIExecutionContext context, Result result) {
-                    if (result.getMessage().equals("Wildfly Swarm is now set up! Enjoy!")) {
+                    if (result.getMessage().equals("Swagger setup completed successfully!")) {
                         flag.set(true);
                     }
                 }
@@ -181,44 +198,22 @@ public class SwaggerSetupCommandTest {
             SwaggerFacet facet = project.getFacet(SwaggerFacet.class);
             Assert.assertTrue(facet.isInstalled());
 
-            MavenPluginAdapter swarmPlugin = (MavenPluginAdapter) project.getFacet(MavenPluginFacet.class)
+            MavenPluginAdapter swaggerPlugin = (MavenPluginAdapter) project.getFacet(MavenPluginFacet.class)
                     .getEffectivePlugin(SwaggerFacetImpl.JAVADOC_PLUGIN_COORDINATE);
-            Assert.assertEquals("swagger-plugin", swarmPlugin.getCoordinate().getArtifactId());
-            Assert.assertEquals(1, swarmPlugin.getExecutions().size());
-            Assert.assertEquals(1, swarmPlugin.getConfig().listConfigurationElements().size());
-            Assert.assertEquals("empty-project", swarmPlugin.getConfig().getConfigurationElement("contextPath").getText());
+            Assert.assertEquals("maven-javadoc-plugin", swaggerPlugin.getCoordinate().getArtifactId());
+            Assert.assertEquals(1, swaggerPlugin.getExecutions().size());
+            Assert.assertEquals(SwaggerFacetImpl.SWAGGER_DOCLET_EXECUTION_ID, swaggerPlugin.getExecutions().get(0).getId());
+            
+            String projectName = project.getFacet(MetadataFacet.class).getProjectName();
+            Assert.assertEquals(((Xpp3Dom) swaggerPlugin.getExecutionsAsMap().get(SwaggerFacetImpl.SWAGGER_DOCLET_EXECUTION_ID).getConfiguration()).getChild("additionalparam").getValue(),"-apiVersion 1\n" +
+"		-docBasePath "
+                    + "" +projectName
+                    + "/apidocs\n" +
+"		-apiBasePath "
+                    + "" +projectName
+                    + "/rest\n" +
+"		-swaggerUiPath ${project.build.directory}/");
         }
     }
 
-    @Test
-    public void testWildflySwarmSetupWithZeroParameters() throws Exception {
-        try (CommandController controller = uiTestHarness.createCommandController(SwaggerSetupCommand.class,
-                project.getRoot())) {
-            controller.initialize();
-            controller.setValueFor("httpPort", 0);
-            controller.setValueFor("portOffset", 0);
-            Assert.assertTrue(controller.isValid());
-
-            final AtomicBoolean flag = new AtomicBoolean();
-            controller.getContext().addCommandExecutionListener(new AbstractCommandExecutionListener() {
-                @Override
-                public void postCommandExecuted(UICommand command, UIExecutionContext context, Result result) {
-                    if (result.getMessage().equals("Wildfly Swarm is now set up! Enjoy!")) {
-                        flag.set(true);
-                    }
-                }
-            });
-            controller.execute();
-            Assert.assertTrue(flag.get());
-            SwaggerFacet facet = project.getFacet(SwaggerFacet.class);
-            Assert.assertTrue(facet.isInstalled());
-
-            MavenPluginAdapter swarmPlugin = (MavenPluginAdapter) project.getFacet(MavenPluginFacet.class)
-                    .getEffectivePlugin(SwaggerFacetImpl.JAVADOC_PLUGIN_COORDINATE);
-            Assert.assertEquals("swagger-plugin", swarmPlugin.getCoordinate().getArtifactId());
-            Assert.assertEquals(1, swarmPlugin.getExecutions().size());
-            Assert.assertEquals(1, swarmPlugin.getConfig().listConfigurationElements().size());
-            Assert.assertEquals("empty-project", swarmPlugin.getConfig().getConfigurationElement("contextPath").getText());
-        }
-    }
 }

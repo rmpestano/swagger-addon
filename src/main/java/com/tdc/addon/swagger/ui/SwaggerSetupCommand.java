@@ -35,11 +35,11 @@ public class SwaggerSetupCommand extends AbstractProjectCommand {
     SwaggerConfiguration swaggerConfiguration;
 
     @Inject
-    @WithAttributes(label = "API base path", description = "Base address of the REST API, eg: 'contextPath/rest'")
+    @WithAttributes(label = "API base path", description = "Base address of the REST API, defaults to 'contextPath/rest'")
     private UIInput<String> apiBasePath;
     
     @Inject
-    @WithAttributes(label = "Doc base dir", description = "Api documentation artifacts (swagger spec json, html, js, css) base directory", defaultValue = "src/main/webapp/apidocs")
+    @WithAttributes(label = "Doc base dir", description = "Api documentation artifacts (swagger spec json, html, js, css) base directory, defaults to 'contextPath/apidocs'")
     private UIInput<String> docBaseDir;
     
 
@@ -51,6 +51,7 @@ public class SwaggerSetupCommand extends AbstractProjectCommand {
     public UICommandMetadata getMetadata(UIContext context) {
         return Metadata.forCommand(getClass()).name("Swagger: Setup").category(Categories.create("Swagger"));
     }
+    
 
     @Override
     protected ProjectFactory getProjectFactory() {
@@ -87,7 +88,8 @@ public class SwaggerSetupCommand extends AbstractProjectCommand {
     @Override
     public void initializeUI(UIBuilder builder) throws Exception {
         Project seleProject = Projects.getSelectedProject(projectFactory, builder.getUIContext());
-        apiBasePath.setDefaultValue(seleProject.getRoot().getName() + "/rest");
+        apiBasePath.setDefaultValue("/"+seleProject.getRoot().getName() + "/rest");
+        docBaseDir.setDefaultValue("/"+seleProject.getRoot().getName() + "/apidocs");
         builder.add(apiBasePath).add(docBaseDir);
     }
 }

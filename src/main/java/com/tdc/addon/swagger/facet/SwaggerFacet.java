@@ -4,10 +4,9 @@ import com.tdc.addon.swagger.config.SwaggerConfiguration;
 import org.jboss.forge.addon.projects.ProjectFacet;
 
 /**
- * The Wildfly-Swarm Facet
+ * The Swagger Facet
  *
- * @author <a href="mailto:ggastald@redhat.com">George Gastaldi</a>
- * @author <a href="mailto:antonio.goncalves@gmail.com">Antonio Goncalves</a>
+ * @author <a href="mailto:rmpestano@gmail.com">Rafael Pestano</a>
  */
 public interface SwaggerFacet extends ProjectFacet {
 

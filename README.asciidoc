@@ -1,5 +1,7 @@
 == JBoss Forge Swagger Addon
- 
+
+image:https://travis-ci.org/rmpestano/swagger-addon.svg[Build Status (Travis CI), link=https://travis-ci.org/rmpestano/swagger-addon]
+image:https://coveralls.io/repos/rmpestano/swagger-addon/badge.svg?branch=master&service=github[Coverage, link=https://coveralls.io/r/rmpestano/swagger-addon] 
         
 === Dependencies: None 
  
