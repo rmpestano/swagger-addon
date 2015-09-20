@@ -1,24 +1,23 @@
 package com.tdc.addon.swagger.facet;
 
 import com.tdc.addon.swagger.config.SwaggerConfiguration;
-import java.util.Properties;
-import javax.inject.Inject;
-
+import com.tdc.addon.swagger.util.FileUtils;
 import org.apache.maven.model.Model;
 import org.jboss.forge.addon.dependencies.Coordinate;
 import org.jboss.forge.addon.dependencies.builder.CoordinateBuilder;
 import org.jboss.forge.addon.facets.AbstractFacet;
-import org.jboss.forge.addon.maven.plugins.ConfigurationBuilder;
-import org.jboss.forge.addon.maven.plugins.ConfigurationElement;
-import org.jboss.forge.addon.maven.plugins.ConfigurationElementBuilder;
-import org.jboss.forge.addon.maven.plugins.Execution;
-import org.jboss.forge.addon.maven.plugins.ExecutionBuilder;
-import org.jboss.forge.addon.maven.plugins.MavenPlugin;
-import org.jboss.forge.addon.maven.plugins.MavenPluginBuilder;
+import org.jboss.forge.addon.maven.plugins.*;
 import org.jboss.forge.addon.maven.projects.MavenFacet;
 import org.jboss.forge.addon.maven.projects.MavenPluginFacet;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.facets.MetadataFacet;
+import org.jboss.forge.addon.resource.DirectoryResource;
+import org.jboss.forge.addon.resource.Resource;
+import org.slf4j.LoggerFactory;
+
+import javax.inject.Inject;
+import java.io.File;
+import java.util.Properties;
 
 /**
  * The implementation of the {@link SwaggerFacet}
@@ -45,7 +44,7 @@ public class SwaggerFacetImpl extends AbstractFacet<Project> implements
     public boolean install() {
         addSwaggerDocletVersionProperty();
         addMavenPlugin();
-        copyResources(); //copy resources (swagger-ui artifacts)
+        copySwaggerUIResources(); //copy resources (swagger-ui artifacts)
         return isInstalled();
     }
 
@@ -63,15 +62,15 @@ public class SwaggerFacetImpl extends AbstractFacet<Project> implements
 
         javadocSwaggerPlugin.addExecution(
                 ExecutionBuilder.create().addGoal("javadoc")
-                .setPhase("generate-resources")
-                .setId("generate-service-docs").
-                setConfig(ConfigurationBuilder.create().
-                        addConfigurationElement(getDocletConfig()).
-                        addConfigurationElement(getDocletArtifact()).
-                        addConfigurationElement(getOutputDir()).
-                        addConfigurationElement(ConfigurationElementBuilder.create().setName("useStandardDocletOptions")
-                        .setText("false")).
-                        addConfigurationElement(getAddidionalParam()))
+                        .setPhase("generate-resources")
+                        .setId("generate-service-docs").
+                        setConfig(ConfigurationBuilder.create().
+                                addConfigurationElement(getDocletConfig()).
+                                addConfigurationElement(getDocletArtifact()).
+                                addConfigurationElement(getOutputDir()).
+                                addConfigurationElement(ConfigurationElementBuilder.create().setName("useStandardDocletOptions")
+                                        .setText("false")).
+                                addConfigurationElement(getAddidionalParam()))
         );
 
         if (pluginFacet.hasPlugin(JAVADOC_PLUGIN_COORDINATE)) {
@@ -130,11 +129,11 @@ public class SwaggerFacetImpl extends AbstractFacet<Project> implements
     private ConfigurationElement getAddidionalParam() {
         String projectName = getFaceted().getFacet(MetadataFacet.class).getProjectName();
         StringBuilder value = new StringBuilder(103);
-        value.append("-apiVersion 1").append("\n\t\t-docBasePath ").append(configuration.getDocBaseDir() == null ? projectName+"/apidocs" : configuration.getDocBaseDir())
+        value.append("-apiVersion 1").append("\n\t\t-docBasePath ").append(configuration.getDocBaseDir() == null ? "/src/main/webapp/apidocs" : configuration.getDocBaseDir())
                 .append("\n\t\t-apiBasePath ").append(configuration.getApiBasePath() == null ? projectName + "/rest" : configuration.getApiBasePath())
                 .append("\n\t\t-swaggerUiPath ${project.build.directory}/");//we will patch swagger ui inside forge addon so no need to use the one bundled with swagger-doclet
         return ConfigurationElementBuilder.create().setName("additionalparam")
-                .setText(value.toString()+" \n\t\t");
+                .setText(value.toString() + " \n\t\t");
     }
 
     private boolean hasSwaggerDocletExecution(MavenPlugin plugin) {
@@ -147,14 +146,25 @@ public class SwaggerFacetImpl extends AbstractFacet<Project> implements
     }
 
     private ConfigurationElement getOutputDir() {
-                //TODO it must be configurable
                 return ConfigurationElementBuilder.create().setName("reportOutputDirectory")
                 .setText("src/main/webapp");
     }
 
-    private void copyResources() {
-       // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private void copySwaggerUIResources() {
+        if(!hasSwaggerUIResources()){
+            try {
+                FileUtils.unzip(new File(getClass().getResource("/apidocs.zip").toURI()),getFaceted().getRoot().reify(DirectoryResource.class).getOrCreateChildDirectory(configuration.getDocBaseDir()).getFullyQualifiedName());
+            } catch (Exception e) {
+                LoggerFactory.getLogger(getClass().getName()).error("Could not unzip swagger ui resources",e);
+            }
+        }
     }
-     
- 
+
+    public boolean hasSwaggerUIResources() {
+        Resource<?> apiDocs = getFaceted().getRoot().getChild(configuration.getDocBaseDir());
+        return apiDocs.exists() && apiDocs.getChild("index.html").exists();
+
+    }
+
+
 }

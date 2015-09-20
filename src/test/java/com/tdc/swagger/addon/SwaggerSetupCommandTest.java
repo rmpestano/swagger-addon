@@ -3,8 +3,11 @@ package com.tdc.swagger.addon;
 import com.tdc.addon.swagger.facet.SwaggerFacet;
 import com.tdc.addon.swagger.facet.SwaggerFacetImpl;
 import com.tdc.addon.swagger.ui.SwaggerSetupCommand;
+
+import java.io.File;
 import java.io.IOException;
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -26,6 +29,7 @@ import org.jboss.forge.addon.maven.projects.MavenPluginFacet;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.ProjectFactory;
 import org.jboss.forge.addon.projects.facets.MetadataFacet;
+import org.jboss.forge.addon.resource.DirectoryResource;
 import org.jboss.forge.addon.shell.test.ShellTest;
 import org.jboss.forge.addon.ui.command.AbstractCommandExecutionListener;
 import org.jboss.forge.addon.ui.command.UICommand;
@@ -70,6 +74,8 @@ public class SwaggerSetupCommandTest {
     @Before
     public void setUp() throws IOException {
         project = projectFactory.createTempProject();
+        DirectoryResource root = project.getRoot().reify(DirectoryResource.class);
+        root.getOrCreateChildDirectory("src").getOrCreateChildDirectory("main").getOrCreateChildDirectory("webapp");
         shellTest.clearScreen();
     }
 
@@ -100,9 +106,9 @@ public class SwaggerSetupCommandTest {
     public void checkCommandShell() throws Exception {
         shellTest.getShell().setCurrentResource(project.getRoot());
         Result result = shellTest.execute("swagger-setup", 10, TimeUnit.SECONDS);
-
         Assert.assertThat(result, not(instanceOf(Failed.class)));
         Assert.assertTrue(project.hasFacet(SwaggerFacet.class));
+        Assert.assertThat(project.getFacet(SwaggerFacet.class).hasSwaggerUIResources(),is(true));
     }
 
     @Test
@@ -206,8 +212,7 @@ public class SwaggerSetupCommandTest {
 
             Assert.assertEquals(((Xpp3Dom) swaggerPlugin.getExecutionsAsMap().get(SwaggerFacetImpl.SWAGGER_DOCLET_EXECUTION_ID).getConfiguration()).getChild("additionalparam").getValue(), "-apiVersion 1\n"
                     + "		-docBasePath "
-                    + "/" + project.getRoot().getName()
-                    + "/apidocs\n"
+                    + "/src/main/webapp/apidocs\n"
                     + "		-apiBasePath "
                     + "/" + project.getRoot().getName()
                     + "/rest\n"
