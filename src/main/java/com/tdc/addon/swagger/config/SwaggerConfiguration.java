@@ -11,19 +11,12 @@ package com.tdc.addon.swagger.config;
  */
 public interface SwaggerConfiguration {
 
-    String getContextPath();
 
-    String getOutputDir();
-
-    String getDocBasePath();
+    String getDocBaseDir();
 
     String getApiBasePath();
 
-    SwaggerConfiguration setContextPath(String contextPath);
-
-    SwaggerConfiguration setOutputDir(String outputDir);
-
-    SwaggerConfiguration setDocBasePath(String outputDir);
+    SwaggerConfiguration setDocBaseDir(String outputDir);
 
     SwaggerConfiguration setApiBasePath(String outputDir);
 

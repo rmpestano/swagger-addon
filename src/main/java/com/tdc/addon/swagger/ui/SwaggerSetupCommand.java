@@ -2,15 +2,9 @@ package com.tdc.addon.swagger.ui;
 
 import com.tdc.addon.swagger.config.SwaggerConfiguration;
 import com.tdc.addon.swagger.facet.SwaggerFacet;
-import static com.tdc.addon.swagger.facet.SwaggerFacetImpl.JAVADOC_PLUGIN_COORDINATE;
-import java.util.Iterator;
 import javax.inject.Inject;
 
 import org.jboss.forge.addon.facets.FacetFactory;
-import org.jboss.forge.addon.maven.plugins.ConfigurationElement;
-import org.jboss.forge.addon.maven.plugins.Execution;
-import org.jboss.forge.addon.maven.projects.MavenFacet;
-import org.jboss.forge.addon.maven.projects.MavenPluginFacet;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.ProjectFactory;
 import org.jboss.forge.addon.projects.Projects;
@@ -41,22 +35,14 @@ public class SwaggerSetupCommand extends AbstractProjectCommand {
     SwaggerConfiguration swaggerConfiguration;
 
     @Inject
-    @WithAttributes(label = "Context path", description = "Web application context path")
-    private UIInput<String> contextPath;
-    
-    @Inject
-    @WithAttributes(label = "Output dir", description = "Swagger artifacts output dir", defaultValue = "src/main/webapp")
-    private UIInput<String> outputDir;
-    
-    @Inject
-    @WithAttributes(label = "Doc base path", description = "Api documentation directory", defaultValue = "src/main/webapp/apidocs")
-    private UIInput<String> docBasePath;
-    
-    @Inject
-    @WithAttributes(label = "API base path", description = "Api base path")
+    @WithAttributes(label = "API base path", description = "Base address of the REST API, eg: 'contextPath/rest'")
     private UIInput<String> apiBasePath;
+    
+    @Inject
+    @WithAttributes(label = "Doc base dir", description = "Api documentation artifacts (swagger spec json, html, js, css) base directory", defaultValue = "src/main/webapp/apidocs")
+    private UIInput<String> docBaseDir;
+    
 
-   
     @Inject
     private ProjectFactory projectFactory;
     
@@ -86,10 +72,8 @@ public class SwaggerSetupCommand extends AbstractProjectCommand {
         }
         
         if(execute){
-            swaggerConfiguration.setContextPath(contextPath.getValue()).
-                setApiBasePath(apiBasePath.getValue()).
-                setDocBasePath(docBasePath.getValue()).
-                setOutputDir(outputDir.getValue());
+            swaggerConfiguration.setApiBasePath(apiBasePath.getValue()).
+                    setDocBaseDir(docBaseDir.getValue());
         SwaggerFacet facet = facetFactory.create(project, SwaggerFacet.class);
         facet.setConfiguration(swaggerConfiguration);
         facetFactory.install(project, facet);
@@ -104,7 +88,6 @@ public class SwaggerSetupCommand extends AbstractProjectCommand {
     public void initializeUI(UIBuilder builder) throws Exception {
         Project seleProject = Projects.getSelectedProject(projectFactory, builder.getUIContext());
         apiBasePath.setDefaultValue(seleProject.getRoot().getName() + "/rest");
-        contextPath.setDefaultValue(seleProject.getRoot().getName());
-        builder.add(contextPath).add(outputDir).add(apiBasePath).add(docBasePath);
+        builder.add(apiBasePath).add(docBaseDir);
     }
 }

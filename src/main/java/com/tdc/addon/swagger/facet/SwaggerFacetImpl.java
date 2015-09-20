@@ -68,12 +68,10 @@ public class SwaggerFacetImpl extends AbstractFacet<Project> implements
                 setConfig(ConfigurationBuilder.create().
                         addConfigurationElement(getDocletConfig()).
                         addConfigurationElement(getDocletArtifact()).
-                        addConfigurationElement(getOutputDir()).
                         addConfigurationElement(getAddidionalParam()))
         );
 
         if(pluginFacet.hasPlugin(JAVADOC_PLUGIN_COORDINATE)){
-            System.out.println("UPDATE!");
             pluginFacet.updatePlugin(javadocSwaggerPlugin);
         } else{
             pluginFacet.addPlugin(javadocSwaggerPlugin);
@@ -113,12 +111,6 @@ public class SwaggerFacetImpl extends AbstractFacet<Project> implements
                 .setText("com.carma.swagger.doclet.ServiceDoclet");
     }
 
-    /* <docletArtifact>
-     <groupId>com.carma</groupId>
-     <artifactId>swagger-doclet</artifactId>
-     <version>1.0.2</version>
-     </docletArtifact>
-     */
     private ConfigurationElement getDocletArtifact() {
 
         return ConfigurationElementBuilder.create()
@@ -131,20 +123,12 @@ public class SwaggerFacetImpl extends AbstractFacet<Project> implements
                         setName("version").setText("${version.swagger-doclet}"));
     }
 
-    /**
-     * <reportOutputDirectory>src/main/webapp</reportOutputDirectory>
-     */
-    private ConfigurationElement getOutputDir() {
-        return ConfigurationElementBuilder.create().setName("reportOutputDirectory")
-                .setText(configuration.getOutputDir() == null ? "src/main/webapp" : configuration.getOutputDir());
-    }
-
     private ConfigurationElement getAddidionalParam() {
         String projectName = getFaceted().getFacet(MetadataFacet.class).getProjectName();
         StringBuilder value = new StringBuilder(103);
-        value.append("apiVersion 1").append("\n\t\t-docBasePath ").append(configuration.getDocBasePath() == null ? projectName + "/apidocs" : configuration.getApiBasePath())
+        value.append("apiVersion 1").append("\n\t\t-docBasePath ").append(configuration.getDocBaseDir() == null ? "src/main/webapp/apidocs" : configuration.getDocBaseDir())
                 .append("\n\t\t-apiBasePath ").append(configuration.getApiBasePath() == null ? projectName + "/rest" : configuration.getApiBasePath())
-                .append("\n\t\t-swaggerUiPath ${project.build.directory}/");
+                .append("\n\t\t-swaggerUiPath ${project.build.directory}/\n\t\t");//we will patch swagger ui inside forge addon so no need to use the one bundled with swagger-doclet
         return ConfigurationElementBuilder.create().setName("additionalparam")
                 .setText(value.toString());
     }

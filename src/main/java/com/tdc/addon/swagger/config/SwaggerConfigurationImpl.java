@@ -10,48 +10,19 @@ import javax.inject.Singleton;
 @Singleton
 public class SwaggerConfigurationImpl implements SwaggerConfiguration {
 
-    private String contextPath;
-    private String outputDir;
-    private String docBasePath;
+    private String docBaseDir;
     private String apiBasePath;
 
     
+
     @Override
-    public String getContextPath() {
-        return contextPath;
+    public String getDocBaseDir() {
+        return docBaseDir;
     }
 
     @Override
-    public String getOutputDir() {
-        return outputDir;
-    }
-
-    @Override
-    public SwaggerConfiguration setContextPath(String contextPath) {
-        this.contextPath = contextPath;
-        return this;
-    }
-
-    /**
-     * app dir (under webapp) where swagger artifacts will be generated
-     *
-     * @param outputDir
-     * @return
-     */
-    @Override
-    public SwaggerConfiguration setOutputDir(String outputDir) {
-        this.outputDir = outputDir;
-        return this;
-    }
-
-    @Override
-    public String getDocBasePath() {
-        return docBasePath;
-    }
-
-    @Override
-    public SwaggerConfiguration setDocBasePath(String docBasePath) {
-        this.docBasePath = docBasePath;
+    public SwaggerConfiguration setDocBaseDir(String docBasePath) {
+        this.docBaseDir = docBasePath;
         return this;
     }
 
