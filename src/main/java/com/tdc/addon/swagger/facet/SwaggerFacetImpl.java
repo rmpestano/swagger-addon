@@ -45,7 +45,7 @@ public class SwaggerFacetImpl extends AbstractFacet<Project> implements
     public boolean install() {
         addSwaggerDocletVersionProperty();
         addMavenPlugin();
-        //TODO copy resources (swagger artifacts)
+        copyResources(); //copy resources (swagger-ui artifacts)
         return isInstalled();
     }
 
@@ -150,6 +150,10 @@ public class SwaggerFacetImpl extends AbstractFacet<Project> implements
                 //TODO it must be configurable
                 return ConfigurationElementBuilder.create().setName("reportOutputDirectory")
                 .setText("src/main/webapp");
+    }
+
+    private void copyResources() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
      
  

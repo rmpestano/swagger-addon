@@ -3,6 +3,7 @@ package com.tdc.swagger.addon;
 import com.tdc.addon.swagger.facet.SwaggerFacet;
 import com.tdc.addon.swagger.facet.SwaggerFacetImpl;
 import com.tdc.addon.swagger.ui.SwaggerSetupCommand;
+import java.io.IOException;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertEquals;
@@ -36,7 +37,9 @@ import org.jboss.forge.addon.ui.result.Result;
 import org.jboss.forge.addon.ui.test.UITestHarness;
 import org.jboss.forge.arquillian.AddonDependencies;
 import org.jboss.forge.arquillian.archive.AddonArchive;
+import org.jboss.forge.arquillian.maven.ProjectHelper;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -49,7 +52,7 @@ public class SwaggerSetupCommandTest {
     @Deployment
     @AddonDependencies
     public static AddonArchive getDeployment() {
-        return ShrinkWrap.create(AddonArchive.class).addBeansXML().addPackages(true, "com.tdc.addon.swagger");
+        return ShrinkWrap.create(AddonArchive.class).addBeansXML();
     }
 
     @Inject
@@ -67,11 +70,16 @@ public class SwaggerSetupCommandTest {
     private Project project;
 
     @Before
-    public void setUp() {
+    public void setUp() throws IOException {
         project = projectFactory.createTempProject();
-        facetFactory.install(project, SwaggerFacet.class);
+        shellTest.clearScreen();
     }
-    
+
+    @After
+    public void tearDown() throws Exception {
+        shellTest.close();
+    }
+
     @Test
     public void checkCommandMetadata() throws Exception {
         try (CommandController controller = uiTestHarness.createCommandController(SwaggerSetupCommand.class,
@@ -93,7 +101,7 @@ public class SwaggerSetupCommandTest {
     @Test
     public void checkCommandShell() throws Exception {
         shellTest.getShell().setCurrentResource(project.getRoot());
-        Result result = shellTest.execute(("Swagger: Setup"), 10, TimeUnit.SECONDS);
+        Result result = shellTest.execute("swagger-setup", 10, TimeUnit.SECONDS);
 
         Assert.assertThat(result, not(instanceOf(Failed.class)));
         Assert.assertTrue(project.hasFacet(SwaggerFacet.class));
@@ -101,7 +109,7 @@ public class SwaggerSetupCommandTest {
 
     @Test
     public void testSwaggerSetup() throws Exception {
-        facetFactory.install(project, SwaggerFacet.class);
+        //facetFactory.install(project, SwaggerFacet.class);
         try (CommandController controller = uiTestHarness.createCommandController(SwaggerSetupCommand.class,
                 project.getRoot())) {
             controller.initialize();
@@ -131,7 +139,7 @@ public class SwaggerSetupCommandTest {
 
     @Test
     public void testSwaggerSetupWithParameters() throws Exception {
-        facetFactory.install(project, SwaggerFacet.class);
+        //facetFactory.install(project, SwaggerFacet.class);
         try (CommandController controller = uiTestHarness.createCommandController(SwaggerSetupCommand.class,
                 project.getRoot())) {
             controller.initialize();
@@ -163,20 +171,20 @@ public class SwaggerSetupCommandTest {
             assertEquals(execConfig.getChildCount(), 5);
             assertEquals(execConfig.getChild("doclet").getValue(), "com.carma.swagger.doclet.ServiceDoclet");
             String projectName = project.getFacet(MetadataFacet.class).getProjectName();
-            assertEquals(execConfig.getChild("additionalparam").getValue(),"-apiVersion 1\n" +
-"		-docBasePath "
+            assertEquals(execConfig.getChild("additionalparam").getValue(), "-apiVersion 1\n"
+                    + "		-docBasePath "
                     + projectName
-                    + "/apidocs\n" +
-"		-apiBasePath "
-                    +  projectName
-                    + "/rest\n" +
-"		-swaggerUiPath ${project.build.directory}/");
+                    + "/apidocs\n"
+                    + "		-apiBasePath "
+                    + projectName
+                    + "/rest\n"
+                    + "		-swaggerUiPath ${project.build.directory}/");
         }
     }
 
     @Test
     public void testSwaggerSetupWithNullParameters() throws Exception {
-        facetFactory.install(project, SwaggerFacet.class);
+        //facetFactory.install(project, SwaggerFacet.class);
         try (CommandController controller = uiTestHarness.createCommandController(SwaggerSetupCommand.class,
                 project.getRoot())) {
             controller.initialize();
@@ -203,16 +211,16 @@ public class SwaggerSetupCommandTest {
             Assert.assertEquals("maven-javadoc-plugin", swaggerPlugin.getCoordinate().getArtifactId());
             Assert.assertEquals(1, swaggerPlugin.getExecutions().size());
             Assert.assertEquals(SwaggerFacetImpl.SWAGGER_DOCLET_EXECUTION_ID, swaggerPlugin.getExecutions().get(0).getId());
-            
+
             String projectName = project.getFacet(MetadataFacet.class).getProjectName();
-            Assert.assertEquals(((Xpp3Dom) swaggerPlugin.getExecutionsAsMap().get(SwaggerFacetImpl.SWAGGER_DOCLET_EXECUTION_ID).getConfiguration()).getChild("additionalparam").getValue(),"-apiVersion 1\n" +
-"		-docBasePath "
-                    + "" +projectName
-                    + "/apidocs\n" +
-"		-apiBasePath "
-                    + "" +projectName
-                    + "/rest\n" +
-"		-swaggerUiPath ${project.build.directory}/");
+            Assert.assertEquals(((Xpp3Dom) swaggerPlugin.getExecutionsAsMap().get(SwaggerFacetImpl.SWAGGER_DOCLET_EXECUTION_ID).getConfiguration()).getChild("additionalparam").getValue(), "-apiVersion 1\n"
+                    + "		-docBasePath "
+                    + "" + projectName
+                    + "/apidocs\n"
+                    + "		-apiBasePath "
+                    + "" + projectName
+                    + "/rest\n"
+                    + "		-swaggerUiPath ${project.build.directory}/");
         }
     }
 
