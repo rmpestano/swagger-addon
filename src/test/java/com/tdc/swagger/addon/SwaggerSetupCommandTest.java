@@ -74,8 +74,6 @@ public class SwaggerSetupCommandTest {
     @Before
     public void setUp() throws IOException {
         project = projectFactory.createTempProject();
-        DirectoryResource root = project.getRoot().reify(DirectoryResource.class);
-        root.getOrCreateChildDirectory("src").getOrCreateChildDirectory("main").getOrCreateChildDirectory("webapp");
         shellTest.clearScreen();
     }
 
