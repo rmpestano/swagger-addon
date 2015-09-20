@@ -37,12 +37,10 @@ import org.jboss.forge.addon.ui.result.Result;
 import org.jboss.forge.addon.ui.test.UITestHarness;
 import org.jboss.forge.arquillian.AddonDependencies;
 import org.jboss.forge.arquillian.archive.AddonArchive;
-import org.jboss.forge.arquillian.maven.ProjectHelper;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -109,7 +107,6 @@ public class SwaggerSetupCommandTest {
 
     @Test
     public void testSwaggerSetup() throws Exception {
-        //facetFactory.install(project, SwaggerFacet.class);
         try (CommandController controller = uiTestHarness.createCommandController(SwaggerSetupCommand.class,
                 project.getRoot())) {
             controller.initialize();
@@ -139,7 +136,6 @@ public class SwaggerSetupCommandTest {
 
     @Test
     public void testSwaggerSetupWithParameters() throws Exception {
-        //facetFactory.install(project, SwaggerFacet.class);
         try (CommandController controller = uiTestHarness.createCommandController(SwaggerSetupCommand.class,
                 project.getRoot())) {
             controller.initialize();
@@ -170,13 +166,10 @@ public class SwaggerSetupCommandTest {
             Xpp3Dom execConfig = (Xpp3Dom) exec.getConfiguration();
             assertEquals(execConfig.getChildCount(), 5);
             assertEquals(execConfig.getChild("doclet").getValue(), "com.carma.swagger.doclet.ServiceDoclet");
-            String projectName = project.getFacet(MetadataFacet.class).getProjectName();
             assertEquals(execConfig.getChild("additionalparam").getValue(), "-apiVersion 1\n"
                     + "		-docBasePath "
-                    + projectName
                     + "/apidocs\n"
                     + "		-apiBasePath "
-                    + projectName
                     + "/rest\n"
                     + "		-swaggerUiPath ${project.build.directory}/");
         }
@@ -184,7 +177,6 @@ public class SwaggerSetupCommandTest {
 
     @Test
     public void testSwaggerSetupWithNullParameters() throws Exception {
-        //facetFactory.install(project, SwaggerFacet.class);
         try (CommandController controller = uiTestHarness.createCommandController(SwaggerSetupCommand.class,
                 project.getRoot())) {
             controller.initialize();
@@ -212,13 +204,12 @@ public class SwaggerSetupCommandTest {
             Assert.assertEquals(1, swaggerPlugin.getExecutions().size());
             Assert.assertEquals(SwaggerFacetImpl.SWAGGER_DOCLET_EXECUTION_ID, swaggerPlugin.getExecutions().get(0).getId());
 
-            String projectName = project.getFacet(MetadataFacet.class).getProjectName();
             Assert.assertEquals(((Xpp3Dom) swaggerPlugin.getExecutionsAsMap().get(SwaggerFacetImpl.SWAGGER_DOCLET_EXECUTION_ID).getConfiguration()).getChild("additionalparam").getValue(), "-apiVersion 1\n"
                     + "		-docBasePath "
-                    + "" + projectName
+                    + "/" + project.getRoot().getName()
                     + "/apidocs\n"
                     + "		-apiBasePath "
-                    + "" + projectName
+                    + "/" + project.getRoot().getName()
                     + "/rest\n"
                     + "		-swaggerUiPath ${project.build.directory}/");
         }
