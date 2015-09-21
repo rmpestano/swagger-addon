@@ -4,7 +4,6 @@ import com.tdc.addon.swagger.facet.SwaggerFacet;
 import com.tdc.addon.swagger.facet.SwaggerFacetImpl;
 import com.tdc.addon.swagger.ui.SwaggerSetupCommand;
 
-import java.io.File;
 import java.io.IOException;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -28,8 +27,6 @@ import org.jboss.forge.addon.maven.plugins.MavenPluginAdapter;
 import org.jboss.forge.addon.maven.projects.MavenPluginFacet;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.ProjectFactory;
-import org.jboss.forge.addon.projects.facets.MetadataFacet;
-import org.jboss.forge.addon.resource.DirectoryResource;
 import org.jboss.forge.addon.shell.test.ShellTest;
 import org.jboss.forge.addon.ui.command.AbstractCommandExecutionListener;
 import org.jboss.forge.addon.ui.command.UICommand;

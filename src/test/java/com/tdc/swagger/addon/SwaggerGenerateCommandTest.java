@@ -1,26 +1,14 @@
 package com.tdc.swagger.addon;
 
 import com.tdc.addon.swagger.facet.SwaggerFacet;
-import com.tdc.addon.swagger.facet.SwaggerFacetImpl;
-import com.tdc.addon.swagger.ui.SwaggerSetupCommand;
-import org.apache.maven.model.PluginExecution;
-import org.codehaus.plexus.util.xml.Xpp3Dom;
-import org.hibernate.validator.cfg.defs.AssertTrueDef;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.forge.addon.facets.FacetFactory;
-import org.jboss.forge.addon.maven.plugins.MavenPluginAdapter;
-import org.jboss.forge.addon.maven.projects.MavenPluginFacet;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.ProjectFactory;
 import org.jboss.forge.addon.resource.DirectoryResource;
 import org.jboss.forge.addon.resource.FileResource;
 import org.jboss.forge.addon.shell.test.ShellTest;
-import org.jboss.forge.addon.ui.command.AbstractCommandExecutionListener;
-import org.jboss.forge.addon.ui.command.UICommand;
-import org.jboss.forge.addon.ui.context.UIExecutionContext;
-import org.jboss.forge.addon.ui.controller.CommandController;
-import org.jboss.forge.addon.ui.metadata.UICommandMetadata;
 import org.jboss.forge.addon.ui.result.Failed;
 import org.jboss.forge.addon.ui.result.Result;
 import org.jboss.forge.addon.ui.test.UITestHarness;
@@ -40,10 +28,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
 
 @RunWith(Arquillian.class)
 public class SwaggerGenerateCommandTest {
