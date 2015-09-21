@@ -69,7 +69,7 @@ public class SwaggerGenerateCommandTest {
     @Test
     public void shouldGenerateSwaggerResources() throws Exception {
         shellTest.getShell().setCurrentResource(project.getRoot());
-        Result result = shellTest.execute("swagger-setup", 10, TimeUnit.SECONDS);
+        Result result = shellTest.execute("swagger-setup", 25, TimeUnit.SECONDS);
         Assert.assertThat(result, not(instanceOf(Failed.class)));
         Assert.assertTrue(project.hasFacet(SwaggerFacet.class));
         Assert.assertThat(project.getFacet(SwaggerFacet.class).hasSwaggerUIResources(), is(true));
@@ -87,7 +87,7 @@ public class SwaggerGenerateCommandTest {
         Assert.assertTrue(project.hasFacet(SwaggerFacet.class));
         Assert.assertThat(project.getFacet(SwaggerFacet.class).hasSwaggerUIResources(), is(true));
         addPersonEndpoint();
-        result = shellTest.execute("swagger-generate", 10, TimeUnit.SECONDS);
+        result = shellTest.execute("swagger-generate", 25, TimeUnit.SECONDS);
         Assert.assertThat(result, not(instanceOf(Failed.class)));
         Assert.assertThat(project.getRoot().reify(DirectoryResource.class).getChild("src/main/webapp/rest/apidocs").getChild("service.json").exists(), is(true));
     }
