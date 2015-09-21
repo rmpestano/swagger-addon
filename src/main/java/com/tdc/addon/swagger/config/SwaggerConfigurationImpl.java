@@ -5,6 +5,9 @@
  */
 package com.tdc.addon.swagger.config;
 
+import javax.inject.Singleton;
+
+@Singleton
 public class SwaggerConfigurationImpl implements SwaggerConfiguration {
 
     private String docBaseDir;

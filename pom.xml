@@ -48,7 +48,7 @@
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-compress</artifactId>
       <version>1.10</version>
-    </dependency>  
+    </dependency>
     <dependency>
       <groupId>org.jboss.forge.furnace.test</groupId>
       <artifactId>furnace-test-harness</artifactId>
@@ -91,7 +91,32 @@
           </execution>
         </executions>
       </plugin>
-       
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.10.3</version>
+        <executions>
+          <execution>
+            <id>generate-service-docs</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>javadoc</goal>
+            </goals>
+            <configuration>
+              <doclet>com.carma.swagger.doclet.ServiceDoclet</doclet>
+              <docletArtifact>
+                <groupId>com.carma</groupId>
+                <artifactId>swagger-doclet</artifactId>
+                <version>${version.swagger-doclet}</version>
+              </docletArtifact>
+              <reportOutputDirectory>src/main/webapp</reportOutputDirectory>
+              <useStandardDocletOptions>false</useStandardDocletOptions>
+              <additionalparam>-apiVersion 1
+		-apiBasePath /swagger-addon/rest
+		-swaggerUiPath ${project.build.directory}/</additionalparam>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
   <profiles>
