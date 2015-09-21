@@ -129,7 +129,7 @@ public class SwaggerFacetImpl extends AbstractFacet<Project> implements
     private ConfigurationElement getAddidionalParam() {
         String projectName = getFaceted().getFacet(MetadataFacet.class).getProjectName();
         StringBuilder value = new StringBuilder(103);
-        value.append("-apiVersion 1").append("\n\t\t-docBasePath ").append(configuration.getDocBaseDir() == null ? "/src/main/webapp/apidocs" : configuration.getDocBaseDir())
+        value.append("-apiVersion 1")
                 .append("\n\t\t-apiBasePath ").append(configuration.getApiBasePath() == null ? projectName + "/rest" : configuration.getApiBasePath())
                 .append("\n\t\t-swaggerUiPath ${project.build.directory}/");//we will patch swagger ui inside forge addon so no need to use the one bundled with swagger-doclet
         return ConfigurationElementBuilder.create().setName("additionalparam")
@@ -145,15 +145,22 @@ public class SwaggerFacetImpl extends AbstractFacet<Project> implements
         return false;
     }
 
+    /**
+     *
+     * directory where swagger (json) spec files will be generated
+     * Note that it must be the same dir where swagger ui artifacts reside
+     * @see SwaggerFacetImpl#copySwaggerUIResources()
+     * @return this
+     */
     private ConfigurationElement getOutputDir() {
                 return ConfigurationElementBuilder.create().setName("reportOutputDirectory")
-                .setText("src/main/webapp");
+                .setText(configuration.getDocBaseDir());
     }
 
     private void copySwaggerUIResources() {
         if(!hasSwaggerUIResources()){
             try {
-                FileUtils.unzip(new File(getClass().getResource("/apidocs.zip").toURI()),getFaceted().getRoot().reify(DirectoryResource.class).getOrCreateChildDirectory(configuration.getDocBaseDir()).getFullyQualifiedName());
+                FileUtils.unzip(new File(getClass().getResource("/apidocs.zip").toURI()),getFaceted().getRoot().reify(DirectoryResource.class).getOrCreateChildDirectory(configuration.getDocBaseDir()+"/apidocs".replaceAll("//","/")).getFullyQualifiedName());
             } catch (Exception e) {
                 LoggerFactory.getLogger(getClass().getName()).error("Could not unzip swagger ui resources",e);
             }
@@ -161,7 +168,7 @@ public class SwaggerFacetImpl extends AbstractFacet<Project> implements
     }
 
     public boolean hasSwaggerUIResources() {
-        Resource<?> apiDocs = getFaceted().getRoot().getChild(configuration.getDocBaseDir());
+        Resource<?> apiDocs = getFaceted().getRoot().getChild(configuration.getDocBaseDir()+"/apidocs");
         return apiDocs.exists() && apiDocs.getChild("index.html").exists();
 
     }

@@ -39,7 +39,7 @@ public class SwaggerSetupCommand extends AbstractProjectCommand {
     private UIInput<String> apiBasePath;
     
     @Inject
-    @WithAttributes(label = "Doc base dir", description = "Api documentation artifacts (swagger spec json, html, js, css) base directory, defaults to 'src/main/webapp/apidocs'")
+    @WithAttributes(label = "Doc base dir", description = "Api documentation artifacts (swagger spec json, html, js, css) base directory, defaults to 'src/main/webapp/'")
     private UIInput<String> docBaseDir;
     
 
@@ -89,7 +89,7 @@ public class SwaggerSetupCommand extends AbstractProjectCommand {
     public void initializeUI(UIBuilder builder) throws Exception {
         Project selectedProject = Projects.getSelectedProject(projectFactory, builder.getUIContext());
         apiBasePath.setDefaultValue("/"+selectedProject.getRoot().getName() + "/rest");
-        docBaseDir.setDefaultValue("/src/main/webapp/apidocs");
+        docBaseDir.setDefaultValue("src/main/webapp");
         builder.add(apiBasePath).add(docBaseDir);
     }
 }
