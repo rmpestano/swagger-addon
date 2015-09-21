@@ -16,9 +16,6 @@ import org.jboss.forge.addon.resource.Resource;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import java.io.File;
-import java.io.FileInputStream;
-import java.nio.file.Paths;
 import java.util.Properties;
 
 /**
@@ -135,10 +132,37 @@ public class SwaggerFacetImpl extends AbstractFacet<Project> implements
         String projectName = getFaceted().getFacet(MetadataFacet.class).getProjectName();
         StringBuilder value = new StringBuilder(103);
         value.append("-apiVersion 1")
+                .append("\n\t\t-docBasePath ").append(configDocBasePath())
                 .append("\n\t\t-apiBasePath ").append(configuration.getApiBasePath() == null ? projectName + "/rest" : configuration.getApiBasePath())
                 .append("\n\t\t-swaggerUiPath ${project.build.directory}/");//we will patch swagger ui inside forge addon so no need to use the one bundled with swagger-doclet
         return ConfigurationElementBuilder.create().setName("additionalparam")
                 .setText(value.toString() + " \n\t\t");
+    }
+
+    /**
+     * configure docbase path based on outputDir.
+     * Ex: if outputdir is 'src/main/webapp/rest'
+     * then docbasePath will be: 'contextPath/rest/apidocs'
+     *
+     * Note that it will use 'webapp' folder as root path.
+     *
+     * FIXME: introduce a new param in setup command to configure docBasePath (and outputDir) and remove this method
+     *
+     * @return
+     */
+    private String configDocBasePath() {
+        String projectName = getFaceted().getFacet(MetadataFacet.class).getProjectName();
+        StringBuilder docBasePath = new StringBuilder("/"+projectName);
+        if(getOutputDir() == null || !getOutputDir().getText().contains("webapp")){
+            docBasePath.append('/').append(getOutputDir().getText()).append("/apidocs");
+        } else{
+            String outputDirText = getOutputDir().getText();
+            //remove webapp folder
+            String docPathSulfix = outputDirText.substring(outputDirText.indexOf("webapp")+6);
+            docBasePath.append('/').append(docPathSulfix).append("apidocs");
+        }
+
+        return docBasePath.toString().replaceAll("//","/");
     }
 
     private boolean hasSwaggerDocletExecution(MavenPlugin plugin) {
