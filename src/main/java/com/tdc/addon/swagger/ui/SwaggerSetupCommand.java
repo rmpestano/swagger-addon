@@ -77,6 +77,7 @@ public class SwaggerSetupCommand extends AbstractProjectCommand {
                     setDocBaseDir(docBaseDir.getValue());
         SwaggerFacet facet = facetFactory.create(project, SwaggerFacet.class);
         facet.setConfiguration(swaggerConfiguration);
+        facet.initialize();
         facetFactory.install(project, facet);
         return Results.success("Swagger setup completed successfully!");
         } else{

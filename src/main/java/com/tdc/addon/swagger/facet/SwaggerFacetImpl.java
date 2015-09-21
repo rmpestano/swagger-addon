@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.io.File;
+import java.io.FileInputStream;
 import java.nio.file.Paths;
 import java.util.Properties;
 
@@ -43,10 +44,13 @@ public class SwaggerFacetImpl extends AbstractFacet<Project> implements
 
     @Override
     public boolean install() {
+        return isInstalled();
+    }
+
+    public void initialize(){
         addSwaggerDocletVersionProperty();
         addMavenPlugin();
         copySwaggerUIResources(); //copy resources (swagger-ui artifacts)
-        return isInstalled();
     }
 
     private void addMavenPlugin() {
@@ -161,8 +165,7 @@ public class SwaggerFacetImpl extends AbstractFacet<Project> implements
     private void copySwaggerUIResources() {
         if(!hasSwaggerUIResources()){
             try {
-                File f = new File(Thread.currentThread().getContextClassLoader().getResource("/apidocs.zip").toURI());
-                FileUtils.unzip(f,getFaceted().getRoot().reify(DirectoryResource.class).getOrCreateChildDirectory(configuration.getDocBaseDir()+"/apidocs".replaceAll("//","/")).getFullyQualifiedName());
+                FileUtils.unzip(Thread.currentThread().getContextClassLoader().getResourceAsStream("/apidocs.zip"),getFaceted().getRoot().reify(DirectoryResource.class).getOrCreateChildDirectory(configuration.getDocBaseDir()+"/apidocs".replaceAll("//","/")).getFullyQualifiedName());
             } catch (Exception e) {
                 LoggerFactory.getLogger(getClass().getName()).error("Could not unzip swagger ui resources",e);
             }

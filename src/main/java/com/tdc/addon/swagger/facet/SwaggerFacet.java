@@ -16,4 +16,6 @@ public interface SwaggerFacet extends ProjectFacet {
     void setConfiguration(SwaggerConfiguration configuration);
 
     boolean hasSwaggerUIResources();
+
+    void initialize();
 }
