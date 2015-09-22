@@ -99,7 +99,7 @@ public class SwaggerSetupCommandTest {
     @Test
     public void checkCommandShell() throws Exception {
         shellTest.getShell().setCurrentResource(project.getRoot());
-        Result result = shellTest.execute("swagger-setup\nn", 10, TimeUnit.SECONDS);
+        Result result = shellTest.execute("swagger-setup", 15, TimeUnit.SECONDS);
         Assert.assertThat(result, not(instanceOf(Failed.class)));
         Assert.assertTrue(project.hasFacet(SwaggerFacet.class));
         Assert.assertThat(project.getFacet(SwaggerFacet.class).hasSwaggerUIResources(),is(true));
@@ -108,7 +108,7 @@ public class SwaggerSetupCommandTest {
     @Test
     public void checkCommandShellGeneratingSwaggerResources() throws Exception {
         shellTest.getShell().setCurrentResource(project.getRoot());
-        Result result = shellTest.execute("swagger-setup\ny", 60, TimeUnit.SECONDS);
+        Result result = shellTest.execute("swagger-setup", 15, TimeUnit.SECONDS);
         Assert.assertThat(result, not(instanceOf(Failed.class)));
         Assert.assertTrue(project.hasFacet(SwaggerFacet.class));
         Assert.assertThat(project.getFacet(SwaggerFacet.class).hasSwaggerUIResources(),is(true));

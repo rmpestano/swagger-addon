@@ -52,7 +52,9 @@ public class SwaggerSetupCommand extends AbstractProjectCommand {
 
     @Override
     public UICommandMetadata getMetadata(UIContext context) {
-        return Metadata.forCommand(getClass()).name("Swagger: Setup").category(Categories.create("Swagger"));
+        return Metadata.forCommand(getClass()).name("Swagger: Setup").
+                category(Categories.create("Swagger")).
+                description("Installs Swagger-ui artifacts and configures swagger-doclet in maven javadoc plugin");
     }
     
 
@@ -82,9 +84,6 @@ public class SwaggerSetupCommand extends AbstractProjectCommand {
         facet.setConfiguration(swaggerConfiguration);
         copySwaggerUIResources(facet);
         facetFactory.install(project, facet);
-        if(context.getPrompt().promptBoolean("Generate Swagger resources?")){
-        	facet.generateSwaggerResources();
-        }
         return Results.success("Swagger setup completed successfully!");
         } else{
             return Results.success();

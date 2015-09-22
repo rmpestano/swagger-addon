@@ -1,47 +1,64 @@
 /**
  * Copyright 2014 Red Hat, Inc. and/or its affiliates.
- *
+ * <p/>
  * Licensed under the Eclipse Public License version 1.0, available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
 package com.tdc.addon.swagger.ui;
 
-import java.util.Arrays;
-import java.util.List;
+import com.tdc.addon.swagger.facet.SwaggerFacet;
+import org.jboss.forge.addon.facets.constraints.FacetConstraint;
+import org.jboss.forge.addon.projects.ProjectFactory;
+import org.jboss.forge.addon.projects.ui.AbstractProjectCommand;
+import org.jboss.forge.addon.ui.context.UIBuilder;
+import org.jboss.forge.addon.ui.context.UIContext;
+import org.jboss.forge.addon.ui.context.UIExecutionContext;
+import org.jboss.forge.addon.ui.metadata.UICommandMetadata;
+import org.jboss.forge.addon.ui.output.UIOutput;
+import org.jboss.forge.addon.ui.result.Result;
+import org.jboss.forge.addon.ui.result.Results;
+import org.jboss.forge.addon.ui.util.Categories;
+import org.jboss.forge.addon.ui.util.Metadata;
 
 import javax.inject.Inject;
 
-import org.jboss.forge.addon.maven.projects.MavenFacet;
-import org.jboss.forge.addon.projects.Project;
-import org.jboss.forge.addon.projects.ProjectFactory;
-import org.jboss.forge.addon.projects.Projects;
-import org.jboss.forge.addon.resource.DirectoryResource;
-import org.jboss.forge.addon.resource.Resource;
-import org.jboss.forge.addon.resource.ResourceFilter;
-import org.jboss.forge.addon.ui.annotation.Command;
-import org.jboss.forge.addon.ui.context.UIContext;
-import org.jboss.forge.addon.ui.output.UIOutput;
-
-import com.tdc.addon.swagger.facet.SwaggerFacet;
-
 /**
- * Common CDI commands
+ * Swagger: Generate command
  *
- * @author <a href="ggastald@redhat.com">George Gastaldi</a>
+ * @author <a href="rmpestano@gmail.com">Rafael Pestano</a>
  */
-public class SwaggerGenerateCommand {
+@FacetConstraint({SwaggerFacet.class})
+public class SwaggerGenerateCommand extends AbstractProjectCommand {
 
     @Inject
     private ProjectFactory projectFactory;
-    
-    @Command(value = "Swagger: Generate", enabled = RequiresSwaggerFacetPredicate.class, categories = {"Swagger"}, help="Generate Swagger spec files based selected project on JaxRS endpoints" )
-    public void execute(final UIContext context, final UIOutput output) {
-        getProject(context).getFacet(SwaggerFacet.class).generateSwaggerResources();
-        output.success(output.out(),"Swagger generate command executed successfuly!");
+
+    @Override
+    public UICommandMetadata getMetadata(UIContext context) {
+        return Metadata.forCommand(getClass()).name("Swagger: Generate").
+                category(Categories.create("Swagger")).
+                description("Generate Swagger spec files based on selected project JaxRS endpoints");
     }
 
+    @Override
+    public void initializeUI(UIBuilder uiBuilder) throws Exception {
 
-    private Project getProject(UIContext context) {
-        return Projects.getSelectedProject(projectFactory, context);
     }
+
+    @Override
+    public Result execute(UIExecutionContext context) {
+        getSelectedProject(context).getFacet(SwaggerFacet.class).generateSwaggerResources();
+        return Results.success("Swagger generate command executed successfuly!");
+    }
+
+    @Override
+    protected ProjectFactory getProjectFactory() {
+        return projectFactory;
+    }
+
+    @Override
+    protected boolean isProjectRequired() {
+        return true;
+    }
+
 }
