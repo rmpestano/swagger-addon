@@ -13,9 +13,13 @@ import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.facets.MetadataFacet;
 import org.jboss.forge.addon.resource.DirectoryResource;
 import org.jboss.forge.addon.resource.Resource;
+import org.jboss.forge.addon.resource.ResourceFilter;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -30,6 +34,9 @@ public class SwaggerFacetImpl extends AbstractFacet<Project> implements
 
     private static final String SWAGGER_DOCLET_VERSION_PROPERTY = "version.swagger-doclet";
     
+    private final List<String> allowedResourcesInApiDocs = Arrays.asList(new String[]{"css", "images","lib"});
+
+    
     @Inject
     private SwaggerConfiguration configuration;
 
@@ -41,14 +48,12 @@ public class SwaggerFacetImpl extends AbstractFacet<Project> implements
 
     @Override
     public boolean install() {
+    	addSwaggerDocletVersionProperty();
+    	addMavenPlugin();
         return isInstalled();
     }
 
-    public void initialize(){
-        addSwaggerDocletVersionProperty();
-        addMavenPlugin();
-        copySwaggerUIResources(); //copy resources (swagger-ui artifacts)
-    }
+   
 
     private void addMavenPlugin() {
         MavenPluginFacet pluginFacet = getFaceted().getFacet(MavenPluginFacet.class);
@@ -134,7 +139,12 @@ public class SwaggerFacetImpl extends AbstractFacet<Project> implements
         value.append("-apiVersion 1")
                 .append("\n\t\t-docBasePath ").append(configDocBasePath())
                 .append("\n\t\t-apiBasePath ").append(configuration.getApiBasePath() == null ? projectName + "/rest" : configuration.getApiBasePath())
-                .append("\n\t\t-swaggerUiPath ${project.build.directory}/");//we will patch swagger ui inside forge addon so no need to use the one bundled with swagger-doclet
+                /**
+                 * we will patch swagger ui inside 
+                 * forge addon so no need to use the one bundled with swagger-doclet
+                 */
+                .append("\n\t\t-swaggerUiPath ${project.build.directory}/");
+
         return ConfigurationElementBuilder.create().setName("additionalparam")
                 .setText(value.toString() + " \n\t\t");
     }
@@ -186,21 +196,37 @@ public class SwaggerFacetImpl extends AbstractFacet<Project> implements
                 .setText(configuration.getDocBaseDir());
     }
 
-    private void copySwaggerUIResources() {
-        if(!hasSwaggerUIResources()){
-            try {
-                FileUtils.unzip(Thread.currentThread().getContextClassLoader().getResourceAsStream("/apidocs.zip"),getFaceted().getRoot().reify(DirectoryResource.class).getOrCreateChildDirectory(configuration.getDocBaseDir()+"/apidocs".replaceAll("//","/")).getFullyQualifiedName());
-            } catch (Exception e) {
-                LoggerFactory.getLogger(getClass().getName()).error("Could not unzip swagger ui resources",e);
-            }
-        }
-    }
 
     public boolean hasSwaggerUIResources() {
         Resource<?> apiDocs = getFaceted().getRoot().getChild(configuration.getDocBaseDir()+"/apidocs");
         return apiDocs.exists() && apiDocs.getChild("index.html").exists();
 
     }
+
+    @Override
+    public void generateSwaggerResources() {
+    	MavenFacet maven = getFaceted().getFacet(MavenFacet.class);
+        maven.executeMaven(Arrays.asList("generate-resources"));
+    	deleteUnusedSwaggerResources();
+    }
+
+	public void deleteUnusedSwaggerResources() {
+		Project project = getFaceted();
+        Resource<?> apiDocs = project.getRoot().reify(DirectoryResource.class).getChild(configuration.getDocBaseDir() + "/apidocs");
+        ResourceFilter unusedResources = new ResourceFilter() {
+            @Override
+            public boolean accept(Resource<?> resource) {
+                return resource instanceof DirectoryResource || resource.getName().endsWith(".war");
+            }
+        };
+        for (Resource<?> resource : apiDocs.listResources(unusedResources)){
+            if(!allowedResourcesInApiDocs.contains(resource.getName()) || resource.getName().endsWith(".war")){
+                resource.delete(true);
+            }
+        }
+		
+	}
+	 
 
 
 }

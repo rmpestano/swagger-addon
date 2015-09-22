@@ -1,6 +1,8 @@
 package com.tdc.addon.swagger.facet;
 
 import com.tdc.addon.swagger.config.SwaggerConfiguration;
+
+import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.ProjectFacet;
 import org.jboss.forge.addon.resource.Resource;
 
@@ -17,5 +19,5 @@ public interface SwaggerFacet extends ProjectFacet {
 
     boolean hasSwaggerUIResources();
 
-    void initialize();
+	void generateSwaggerResources();
 }

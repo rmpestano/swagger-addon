@@ -15,6 +15,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Logger;
 
 import javax.inject.Inject;
 import org.apache.maven.model.PluginExecution;
@@ -59,9 +60,6 @@ public class SwaggerSetupCommandTest {
     private ProjectFactory projectFactory;
 
     @Inject
-    private FacetFactory facetFactory;
-
-    @Inject
     private UITestHarness uiTestHarness;
 
     @Inject
@@ -101,7 +99,16 @@ public class SwaggerSetupCommandTest {
     @Test
     public void checkCommandShell() throws Exception {
         shellTest.getShell().setCurrentResource(project.getRoot());
-        Result result = shellTest.execute("swagger-setup", 10, TimeUnit.SECONDS);
+        Result result = shellTest.execute("swagger-setup\nn", 10, TimeUnit.SECONDS);
+        Assert.assertThat(result, not(instanceOf(Failed.class)));
+        Assert.assertTrue(project.hasFacet(SwaggerFacet.class));
+        Assert.assertThat(project.getFacet(SwaggerFacet.class).hasSwaggerUIResources(),is(true));
+    }
+
+    @Test
+    public void checkCommandShellGeneratingSwaggerResources() throws Exception {
+        shellTest.getShell().setCurrentResource(project.getRoot());
+        Result result = shellTest.execute("swagger-setup\ny", 10, TimeUnit.SECONDS);
         Assert.assertThat(result, not(instanceOf(Failed.class)));
         Assert.assertTrue(project.hasFacet(SwaggerFacet.class));
         Assert.assertThat(project.getFacet(SwaggerFacet.class).hasSwaggerUIResources(),is(true));

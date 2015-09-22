@@ -2,6 +2,8 @@ package com.tdc.addon.swagger.ui;
 
 import com.tdc.addon.swagger.config.SwaggerConfiguration;
 import com.tdc.addon.swagger.facet.SwaggerFacet;
+import com.tdc.addon.swagger.util.FileUtils;
+
 import javax.inject.Inject;
 
 import org.jboss.forge.addon.facets.FacetFactory;
@@ -9,6 +11,7 @@ import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.ProjectFactory;
 import org.jboss.forge.addon.projects.Projects;
 import org.jboss.forge.addon.projects.ui.AbstractProjectCommand;
+import org.jboss.forge.addon.resource.DirectoryResource;
 import org.jboss.forge.addon.ui.context.UIBuilder;
 import org.jboss.forge.addon.ui.context.UIContext;
 import org.jboss.forge.addon.ui.context.UIExecutionContext;
@@ -19,6 +22,7 @@ import org.jboss.forge.addon.ui.result.Result;
 import org.jboss.forge.addon.ui.result.Results;
 import org.jboss.forge.addon.ui.util.Categories;
 import org.jboss.forge.addon.ui.util.Metadata;
+import org.slf4j.LoggerFactory;
 
 /**
  * Swagger: Setup command
@@ -29,11 +33,10 @@ public class SwaggerSetupCommand extends AbstractProjectCommand {
 
     @Inject
     private FacetFactory facetFactory;
-    
         
     @Inject
     SwaggerConfiguration swaggerConfiguration;
-
+    
     @Inject
     @WithAttributes(label = "API base path", description = "Base address of the REST API, defaults to 'contextPath/rest'")
     private UIInput<String> apiBasePath;
@@ -77,8 +80,11 @@ public class SwaggerSetupCommand extends AbstractProjectCommand {
                     setDocBaseDir(docBaseDir.getValue());
         SwaggerFacet facet = facetFactory.create(project, SwaggerFacet.class);
         facet.setConfiguration(swaggerConfiguration);
-        facet.initialize();
+        copySwaggerUIResources(facet);
         facetFactory.install(project, facet);
+        if(context.getPrompt().promptBoolean("Generate Swagger resources?")){
+        	facet.generateSwaggerResources();
+        }
         return Results.success("Swagger setup completed successfully!");
         } else{
             return Results.success();
@@ -92,5 +98,15 @@ public class SwaggerSetupCommand extends AbstractProjectCommand {
         apiBasePath.setDefaultValue("/"+selectedProject.getRoot().getName() + "/rest");
         docBaseDir.setDefaultValue("src/main/webapp");
         builder.add(apiBasePath).add(docBaseDir);
+    }
+    
+    private void copySwaggerUIResources(SwaggerFacet facet) {
+        if(!facet.hasSwaggerUIResources()){
+            try {
+                FileUtils.unzip(Thread.currentThread().getContextClassLoader().getResourceAsStream("/apidocs.zip"),facet.getFaceted().getRoot().reify(DirectoryResource.class).getOrCreateChildDirectory(facet.getConfiguration().getDocBaseDir()+"/apidocs".replaceAll("//","/")).getFullyQualifiedName());
+            } catch (Exception e) {
+                LoggerFactory.getLogger(getClass().getName()).error("Could not unzip swagger ui resources",e);
+            }
+        }
     }
 }
