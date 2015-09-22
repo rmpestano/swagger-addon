@@ -9,6 +9,7 @@ package com.tdc.addon.swagger.ui;
 import com.tdc.addon.swagger.facet.SwaggerFacet;
 import org.jboss.forge.addon.facets.constraints.FacetConstraint;
 import org.jboss.forge.addon.projects.ProjectFactory;
+import org.jboss.forge.addon.projects.facets.MetadataFacet;
 import org.jboss.forge.addon.projects.ui.AbstractProjectCommand;
 import org.jboss.forge.addon.ui.context.UIBuilder;
 import org.jboss.forge.addon.ui.context.UIContext;
@@ -37,7 +38,7 @@ public class SwaggerGenerateCommand extends AbstractProjectCommand {
     public UICommandMetadata getMetadata(UIContext context) {
         return Metadata.forCommand(getClass()).name("Swagger: Generate").
                 category(Categories.create("Swagger")).
-                description("Generate Swagger spec files based on selected project JaxRS endpoints");
+                description("Generate Swagger spec files for JAXRS endpoints of project "+getSelectedProject(context).getFacet(MetadataFacet.class).getProjectName().toUpperCase());
     }
 
     @Override

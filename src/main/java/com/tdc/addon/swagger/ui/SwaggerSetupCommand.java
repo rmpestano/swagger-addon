@@ -10,6 +10,7 @@ import org.jboss.forge.addon.facets.FacetFactory;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.ProjectFactory;
 import org.jboss.forge.addon.projects.Projects;
+import org.jboss.forge.addon.projects.facets.MetadataFacet;
 import org.jboss.forge.addon.projects.ui.AbstractProjectCommand;
 import org.jboss.forge.addon.resource.DirectoryResource;
 import org.jboss.forge.addon.ui.context.UIBuilder;
@@ -54,7 +55,7 @@ public class SwaggerSetupCommand extends AbstractProjectCommand {
     public UICommandMetadata getMetadata(UIContext context) {
         return Metadata.forCommand(getClass()).name("Swagger: Setup").
                 category(Categories.create("Swagger")).
-                description("Installs Swagger-ui artifacts and configures swagger-doclet in maven javadoc plugin");
+                description("Installs Swagger-ui artifacts and configures swagger-doclet for project "+getSelectedProject(context).getFacet(MetadataFacet.class).getProjectName().toUpperCase());
     }
     
 
@@ -82,8 +83,8 @@ public class SwaggerSetupCommand extends AbstractProjectCommand {
                     setDocBaseDir(docBaseDir.getValue());
         SwaggerFacet facet = facetFactory.create(project, SwaggerFacet.class);
         facet.setConfiguration(swaggerConfiguration);
-        copySwaggerUIResources(facet);
         facetFactory.install(project, facet);
+        copySwaggerUIResources(facet);
         return Results.success("Swagger setup completed successfully!");
         } else{
             return Results.success();
