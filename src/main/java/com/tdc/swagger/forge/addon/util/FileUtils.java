@@ -1,10 +1,9 @@
-package com.tdc.addon.swagger.util;
+package com.tdc.swagger.forge.addon.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.nio.file.Paths;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 

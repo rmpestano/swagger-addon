@@ -1,8 +1,8 @@
-package com.tdc.addon.swagger.ui;
+package com.tdc.swagger.forge.addon.ui;
 
-import com.tdc.addon.swagger.config.SwaggerConfiguration;
-import com.tdc.addon.swagger.facet.SwaggerFacet;
-import com.tdc.addon.swagger.util.FileUtils;
+import com.tdc.swagger.forge.addon.config.SwaggerConfiguration;
+import com.tdc.swagger.forge.addon.facet.SwaggerFacet;
+import com.tdc.swagger.forge.addon.util.FileUtils;
 
 import javax.inject.Inject;
 
@@ -103,7 +103,7 @@ public class SwaggerSetupCommand extends AbstractProjectCommand {
     private void copySwaggerUIResources(SwaggerFacet facet) {
         if(!facet.hasSwaggerUIResources()){
             try {
-                FileUtils.unzip(Thread.currentThread().getContextClassLoader().getResourceAsStream("/apidocs.zip"),facet.getFaceted().getRoot().reify(DirectoryResource.class).getOrCreateChildDirectory(facet.getConfiguration().getDocBaseDir()+"/apidocs".replaceAll("//","/")).getFullyQualifiedName());
+                FileUtils.unzip(Thread.currentThread().getContextClassLoader().getResourceAsStream("/apidocs.zip"), facet.getFaceted().getRoot().reify(DirectoryResource.class).getOrCreateChildDirectory(facet.getConfiguration().getDocBaseDir() + "/apidocs".replaceAll("//", "/")).getFullyQualifiedName());
             } catch (Exception e) {
                 LoggerFactory.getLogger(getClass().getName()).error("Could not unzip swagger ui resources",e);
             }

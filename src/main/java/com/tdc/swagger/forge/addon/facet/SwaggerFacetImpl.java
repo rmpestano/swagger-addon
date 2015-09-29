@@ -1,7 +1,6 @@
-package com.tdc.addon.swagger.facet;
+package com.tdc.swagger.forge.addon.facet;
 
-import com.tdc.addon.swagger.config.SwaggerConfiguration;
-import com.tdc.addon.swagger.util.FileUtils;
+import com.tdc.swagger.forge.addon.config.SwaggerConfiguration;
 import org.apache.maven.model.Model;
 import org.jboss.forge.addon.dependencies.Coordinate;
 import org.jboss.forge.addon.dependencies.builder.CoordinateBuilder;
@@ -14,7 +13,6 @@ import org.jboss.forge.addon.projects.facets.MetadataFacet;
 import org.jboss.forge.addon.resource.DirectoryResource;
 import org.jboss.forge.addon.resource.Resource;
 import org.jboss.forge.addon.resource.ResourceFilter;
-import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 

@@ -1,10 +1,8 @@
-package com.tdc.addon.swagger.facet;
+package com.tdc.swagger.forge.addon.facet;
 
-import com.tdc.addon.swagger.config.SwaggerConfiguration;
+import com.tdc.swagger.forge.addon.config.SwaggerConfiguration;
 
-import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.ProjectFacet;
-import org.jboss.forge.addon.resource.Resource;
 
 /**
  * The Swagger Facet

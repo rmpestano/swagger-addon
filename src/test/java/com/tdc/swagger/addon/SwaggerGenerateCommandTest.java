@@ -1,6 +1,6 @@
 package com.tdc.swagger.addon;
 
-import com.tdc.addon.swagger.facet.SwaggerFacet;
+import com.tdc.swagger.forge.addon.facet.SwaggerFacet;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.forge.addon.facets.FacetFactory;

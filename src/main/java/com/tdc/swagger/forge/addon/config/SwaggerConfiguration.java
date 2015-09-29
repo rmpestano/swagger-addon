@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.tdc.addon.swagger.config;
+package com.tdc.swagger.forge.addon.config;
 
 /**
  *

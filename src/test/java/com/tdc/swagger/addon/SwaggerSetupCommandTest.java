@@ -1,8 +1,8 @@
 package com.tdc.swagger.addon;
 
-import com.tdc.addon.swagger.facet.SwaggerFacet;
-import com.tdc.addon.swagger.facet.SwaggerFacetImpl;
-import com.tdc.addon.swagger.ui.SwaggerSetupCommand;
+import com.tdc.swagger.forge.addon.facet.SwaggerFacet;
+import com.tdc.swagger.forge.addon.facet.SwaggerFacetImpl;
+import com.tdc.swagger.forge.addon.ui.SwaggerSetupCommand;
 
 import java.io.IOException;
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -15,7 +15,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Logger;
 
 import javax.inject.Inject;
 import org.apache.maven.model.PluginExecution;
@@ -23,7 +22,6 @@ import org.codehaus.plexus.util.xml.Xpp3Dom;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.forge.addon.facets.FacetFactory;
 import org.jboss.forge.addon.maven.plugins.MavenPluginAdapter;
 import org.jboss.forge.addon.maven.projects.MavenPluginFacet;
 import org.jboss.forge.addon.projects.Project;
