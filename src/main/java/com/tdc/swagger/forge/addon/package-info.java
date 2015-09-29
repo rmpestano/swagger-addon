@@ -1,1 +1,0 @@
-package com.tdc.swagger.forge.addon;

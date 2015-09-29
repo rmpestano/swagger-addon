@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.tdc.swagger.forge.addon.config;
+package org.jboss.swagger.addon.config;
 
 /**
  *
@@ -11,13 +11,12 @@ package com.tdc.swagger.forge.addon.config;
  */
 public interface SwaggerConfiguration {
 
+  String getDocBaseDir();
 
-    String getDocBaseDir();
+  String getApiBasePath();
 
-    String getApiBasePath();
+  SwaggerConfiguration setDocBaseDir(String outputDir);
 
-    SwaggerConfiguration setDocBaseDir(String outputDir);
-
-    SwaggerConfiguration setApiBasePath(String outputDir);
+  SwaggerConfiguration setApiBasePath(String outputDir);
 
 }
