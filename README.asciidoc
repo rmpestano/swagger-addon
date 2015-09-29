@@ -5,6 +5,10 @@ image:https://coveralls.io/repos/rmpestano/swagger-addon/badge.svg?branch=master
 
 This forge addon enables a fast way to configure and generate Swagger spec files based on your REST endpoints.
 
+=== Demo
+
+video::Gwc3jYb2MJA[youtube]
+
         
 === Dependencies: None 
  
@@ -36,5 +40,3 @@ It will invoke a maven goal to activate the maven plugin that will generate swag
 * Adds swagger-ui artifacts 
 * Generates swagger spec files based on JAXRS annotation through https://github.com/teamcarma/swagger-jaxrs-doclet[carma swagger doclet^].  
 
-
- 
