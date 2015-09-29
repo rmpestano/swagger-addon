@@ -2,6 +2,9 @@
 
 image:https://travis-ci.org/rmpestano/swagger-addon.svg[Build Status (Travis CI), link=https://travis-ci.org/rmpestano/swagger-addon]
 image:https://coveralls.io/repos/rmpestano/swagger-addon/badge.svg?branch=master&service=github[Coverage, link=https://coveralls.io/r/rmpestano/swagger-addon] 
+
+This forge addon enables a fast way to configure and generate Swagger spec files based on your REST endpoints.
+
         
 === Dependencies: None 
  
@@ -17,15 +20,21 @@ addon-install-from-git --url https://github.com/rmpestano/swagger-addon.git
 
 === Usage 
 
-Invoke *Swagger: Setup* command.
+* *Swagger: Setup* command: 
+====
+It will install a maven plugin that generates Swagger spec files based on https://jax-rs-spec.java.net/[JAXRS^] endpoints. The setup command also copies https://github.com/swagger-api/swagger-ui[swagger-ui^] resources into your webapp.
+====
 
-Invoke *Swagger: Generate* command.
+* *Swagger: Generate* command: 
+====
+It will invoke a maven goal to activate the maven plugin that will generate swagger spec files(.json) based on your JAXRS endpoints.
+====
 
 === Features
 
 * Configures maven plugin to generate REST api based on http://swagger.io/[Swagger^] specification. 
 * Adds swagger-ui artifacts 
-* Generates swagger spec files based on JaxRS annotation through https://github.com/teamcarma/swagger-jaxrs-doclet[carma swagger doclet^].  
+* Generates swagger spec files based on JAXRS annotation through https://github.com/teamcarma/swagger-jaxrs-doclet[carma swagger doclet^].  
 
 
  
