@@ -10,9 +10,9 @@
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <version.forge>2.19.2.Final</version.forge>
-        <version.furnace>2.22.0.Final</version.furnace>
-        <version.swagger-doclet>1.1.1</version.swagger-doclet>
+        <version.forge>3.3.1.Final</version.forge>
+        <version.furnace>2.23.8.Final</version.furnace>
+        <version.swagger-doclet>1.1.3</version.swagger-doclet>
     </properties>
     <dependencyManagement>
         <dependencies>
