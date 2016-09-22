@@ -70,7 +70,7 @@ public class SwaggerFacetImpl extends AbstractFacet<Project>implements SwaggerFa
     Properties properties = pom.getProperties();
     if (!properties.contains(SWAGGER_DOCLET_VERSION_PROPERTY)) {
       // TODO: Fetch the latest version
-      properties.setProperty(SWAGGER_DOCLET_VERSION_PROPERTY, "1.1.3");
+      properties.setProperty(SWAGGER_DOCLET_VERSION_PROPERTY, "1.1.2");
       maven.setModel(pom);
     }
 
