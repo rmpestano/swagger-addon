@@ -6,8 +6,6 @@
  */
 package org.jboss.swagger.addon.ui;
 
-import javax.inject.Inject;
-
 import org.jboss.forge.addon.facets.constraints.FacetConstraint;
 import org.jboss.forge.addon.projects.ProjectFactory;
 import org.jboss.forge.addon.projects.facets.MetadataFacet;
@@ -22,6 +20,8 @@ import org.jboss.forge.addon.ui.util.Categories;
 import org.jboss.forge.addon.ui.util.Metadata;
 import org.jboss.swagger.addon.facet.SwaggerFacet;
 
+import javax.inject.Inject;
+
 /**
  * Swagger: Generate command
  *
@@ -35,7 +35,9 @@ public class SwaggerGenerateCommand extends AbstractProjectCommand {
 
   @Override
   public UICommandMetadata getMetadata(UIContext context) {
-    return Metadata.forCommand(getClass()).name("Swagger: Generate").category(Categories.create("Swagger")).description("Generate Swagger spec files for JAXRS endpoints of project " + getSelectedProject(context).getFacet(MetadataFacet.class).getProjectName().toUpperCase());
+    return Metadata.forCommand(SwaggerGenerateCommand.class).name("Swagger: Generate").
+            category(Categories.create("Swagger")).
+            description("Generate Swagger spec files for JAXRS endpoints of project " + getSelectedProject(context) != null ? getSelectedProject(context).getFacet(MetadataFacet.class).getProjectName().toUpperCase():"");
   }
 
   @Override

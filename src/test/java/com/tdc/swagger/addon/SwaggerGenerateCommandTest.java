@@ -1,16 +1,5 @@
 package com.tdc.swagger.addon;
 
-import static org.hamcrest.CoreMatchers.*;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.concurrent.TimeUnit;
-
-import javax.inject.Inject;
-
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.forge.addon.facets.FacetFactory;
@@ -31,6 +20,16 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import javax.inject.Inject;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.concurrent.TimeUnit;
+
+import static org.hamcrest.CoreMatchers.*;
 
 @RunWith(Arquillian.class)
 public class SwaggerGenerateCommandTest {
@@ -82,7 +81,7 @@ public class SwaggerGenerateCommandTest {
   @Test
   public void shouldGenerateSwaggerResourcesInDifferentFolder() throws Exception {
     shellTest.getShell().setCurrentResource(project.getRoot());
-    Result result = shellTest.execute("swagger-setup --docBaseDir src/main/webapp/rest", 15, TimeUnit.SECONDS);
+    Result result = shellTest.execute("swagger-setup --doc-base-dir src/main/webapp/rest", 15, TimeUnit.SECONDS);
     Assert.assertThat(result, not(instanceOf(Failed.class)));
     Assert.assertTrue(project.hasFacet(SwaggerFacet.class));
     Assert.assertThat(project.getFacet(SwaggerFacet.class).hasSwaggerUIResources(), is(true));
