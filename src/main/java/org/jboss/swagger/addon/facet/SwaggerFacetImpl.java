@@ -1,11 +1,5 @@
 package org.jboss.swagger.addon.facet;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Properties;
-
-import javax.inject.Inject;
-
 import org.apache.maven.model.Model;
 import org.jboss.forge.addon.dependencies.Coordinate;
 import org.jboss.forge.addon.dependencies.builder.CoordinateBuilder;
@@ -19,6 +13,11 @@ import org.jboss.forge.addon.resource.DirectoryResource;
 import org.jboss.forge.addon.resource.Resource;
 import org.jboss.forge.addon.resource.ResourceFilter;
 import org.jboss.swagger.addon.config.SwaggerConfiguration;
+
+import javax.inject.Inject;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * The implementation of the {@link SwaggerFacet}
@@ -70,7 +69,7 @@ public class SwaggerFacetImpl extends AbstractFacet<Project>implements SwaggerFa
     Properties properties = pom.getProperties();
     if (!properties.contains(SWAGGER_DOCLET_VERSION_PROPERTY)) {
       // TODO: Fetch the latest version
-      properties.setProperty(SWAGGER_DOCLET_VERSION_PROPERTY, "1.1.2");
+      properties.setProperty(SWAGGER_DOCLET_VERSION_PROPERTY, "1.0.7");
       maven.setModel(pom);
     }
 
@@ -93,12 +92,12 @@ public class SwaggerFacetImpl extends AbstractFacet<Project>implements SwaggerFa
   }
 
   private ConfigurationElement getDocletConfig() {
-    return ConfigurationElementBuilder.create().setName("doclet").setText("com.carma.swagger.doclet.ServiceDoclet");
+    return ConfigurationElementBuilder.create().setName("doclet").setText("com.tenxerconsulting.swagger.doclet.ServiceDoclet");
   }
 
   private ConfigurationElement getDocletArtifact() {
 
-    return ConfigurationElementBuilder.create().setName("docletArtifact").addChild(ConfigurationElementBuilder.create().setName("groupId").setText("com.carma")).addChild(ConfigurationElementBuilder.create().setName("artifactId").setText("swagger-doclet")).addChild(ConfigurationElementBuilder.create().setName("version").setText("${version.swagger-doclet}"));
+    return ConfigurationElementBuilder.create().setName("docletArtifact").addChild(ConfigurationElementBuilder.create().setName("groupId").setText("com.tenxerconsulting")).addChild(ConfigurationElementBuilder.create().setName("artifactId").setText("swagger-doclet")).addChild(ConfigurationElementBuilder.create().setName("version").setText("${version.swagger-doclet}"));
   }
 
   private ConfigurationElement getAddidionalParam() {
@@ -134,6 +133,9 @@ public class SwaggerFacetImpl extends AbstractFacet<Project>implements SwaggerFa
       String outputDirText = getOutputDir().getText();
       // remove webapp folder
       String docPathSulfix = outputDirText.substring(outputDirText.indexOf("webapp") + 6);
+      if(!docPathSulfix.endsWith("/")){
+        docPathSulfix = docPathSulfix +"/";
+      }
       docBasePath.append('/').append(docPathSulfix).append("apidocs");
     }
 

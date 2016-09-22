@@ -1,14 +1,5 @@
 package com.tdc.swagger.addon;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import javax.inject.Inject;
-
 import org.apache.maven.model.PluginExecution;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -38,6 +29,14 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import javax.inject.Inject;
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
 @RunWith(Arquillian.class)
 public class SwaggerSetupCommandTest {
@@ -161,7 +160,7 @@ public class SwaggerSetupCommandTest {
       assertEquals(exec.getId(), SwaggerFacetImpl.SWAGGER_DOCLET_EXECUTION_ID);
       Xpp3Dom execConfig = (Xpp3Dom) exec.getConfiguration();
       assertEquals(execConfig.getChildCount(), 5);
-      assertEquals(execConfig.getChild("doclet").getValue(), "com.carma.swagger.doclet.ServiceDoclet");
+      assertEquals(execConfig.getChild("doclet").getValue(), "com.tenxerconsulting.swagger.doclet.ServiceDoclet");
       assertEquals(execConfig.getChild("reportOutputDirectory").getValue(), "docs");
       String projectName = project.getFacet(MetadataFacet.class).getProjectName();
       assertEquals(execConfig.getChild("additionalparam").getValue(), "-apiVersion 1\n" + "		-docBasePath " + "/" + projectName + "/docs/apidocs\n" + "		-apiBasePath " + "/rest\n" + "		-swaggerUiPath ${project.build.directory}/");
