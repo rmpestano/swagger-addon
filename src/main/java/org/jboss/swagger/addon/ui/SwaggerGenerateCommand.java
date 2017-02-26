@@ -37,7 +37,7 @@ public class SwaggerGenerateCommand extends AbstractProjectCommand {
   public UICommandMetadata getMetadata(UIContext context) {
     return Metadata.forCommand(SwaggerGenerateCommand.class).name("Swagger: Generate").
             category(Categories.create("Swagger")).
-            description("Generate Swagger spec files for JAXRS endpoints of project " + getSelectedProject(context) != null ? getSelectedProject(context).getFacet(MetadataFacet.class).getProjectName().toUpperCase():"");
+            description("Generate Swagger spec files (in /target/resourcesDir) for JAXRS endpoints of project " + getSelectedProject(context) != null ? getSelectedProject(context).getFacet(MetadataFacet.class).getProjectName().toUpperCase():"");
   }
 
   @Override

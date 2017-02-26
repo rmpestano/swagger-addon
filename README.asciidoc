@@ -26,7 +26,7 @@ addon-install-from-git --url https://github.com/rmpestano/swagger-addon.git
 
 * *Swagger: Setup* command: 
 ====
-It will install a maven plugin that generates Swagger spec files based on https://jax-rs-spec.java.net/[JAXRS^] endpoints. The setup command also copies https://github.com/swagger-api/swagger-ui[swagger-ui^] resources into your webapp.
+It will install a maven plugin that generates Swagger 2.0 spec files based on https://jax-rs-spec.java.net/[JAXRS^] endpoints. The setup command also copies https://github.com/swagger-api/swagger-ui[swagger-ui^] resources into your webapp under *resourcesDir*.
 ====
 
 * *Swagger: Generate* command: 
@@ -34,9 +34,10 @@ It will install a maven plugin that generates Swagger spec files based on https:
 It will invoke a maven goal to activate the maven plugin that will generate swagger spec files(.json) based on your JAXRS endpoints.
 ====
 
+
 === Features
 
-* Configures maven plugin to generate REST api based on http://swagger.io/[Swagger^] specification. 
+* Configures maven plugin to generate REST api based on http://swagger.io/[Swagger^] 2.0 specification.
 * Adds swagger-ui artifacts 
-* Generates swagger spec files based on JAXRS annotation through https://github.com/teamcarma/swagger-jaxrs-doclet[carma swagger doclet^].  
+* Generates swagger spec files based on JAXRS annotation through https://github.com/sdaschner/jaxrs-analyzer[JaxRS Analyzer^].
 

@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jboss.swagger</groupId>
     <artifactId>swagger-addon</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <properties>
         <jacoco.version>0.7.4.201502262128</jacoco.version>
         <maven.compiler.source>1.7</maven.compiler.source>
@@ -101,6 +100,14 @@
         <finalName>swagger-addon</finalName>
         <plugins>
             <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+            <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>2.6</version>
                 <executions>
@@ -120,12 +127,29 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.18.1</version>
             </plugin>
+            <plugin>
+        <groupId>com.sebastian-daschner</groupId>
+        <artifactId>jaxrs-analyzer-maven-plugin</artifactId>
+        <version>0.13</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>analyze-jaxrs</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <backend>swagger</backend>
+          <resourcesDir>swagger-addon/apidocs</resourcesDir>
+        </configuration>
+      </plugin>
         </plugins>
     </build>
     <profiles>
         <profile>
             <id>release</id>
-            <activation/>
+            <activation />
             <build>
                 <plugins>
                     <plugin>

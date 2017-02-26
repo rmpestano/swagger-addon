@@ -5,35 +5,26 @@
  */
 package org.jboss.swagger.addon.config;
 
+import org.jboss.forge.addon.maven.projects.MavenPluginFacet;
+
+import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 
 @Singleton
 public class SwaggerConfigurationImpl implements SwaggerConfiguration {
 
-  private String docBaseDir;
+  private String resourcesDir;
 
-  private String apiBasePath;
-
-  @Override
-  public String getDocBaseDir() {
-    return docBaseDir;
-  }
 
   @Override
-  public SwaggerConfiguration setDocBaseDir(String docBasePath) {
-    this.docBaseDir = docBasePath;
+  public SwaggerConfiguration setResourcesDir(String resourcesDir) {
+    this.resourcesDir = resourcesDir;
     return this;
   }
 
-  @Override
-  public String getApiBasePath() {
-    return apiBasePath;
+  public String getResourcesDir() {
+    return resourcesDir;
   }
 
-  @Override
-  public SwaggerConfiguration setApiBasePath(String apiBasePath) {
-    this.apiBasePath = apiBasePath;
-    return this;
-  }
 
 }

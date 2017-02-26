@@ -11,12 +11,8 @@ package org.jboss.swagger.addon.config;
  */
 public interface SwaggerConfiguration {
 
-  String getDocBaseDir();
 
-  String getApiBasePath();
+  String getResourcesDir();
 
-  SwaggerConfiguration setDocBaseDir(String outputDir);
-
-  SwaggerConfiguration setApiBasePath(String outputDir);
-
+  SwaggerConfiguration setResourcesDir(String resourcesDir);
 }
