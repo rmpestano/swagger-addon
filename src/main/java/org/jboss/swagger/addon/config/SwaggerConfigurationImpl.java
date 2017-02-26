@@ -5,9 +5,6 @@
  */
 package org.jboss.swagger.addon.config;
 
-import org.jboss.forge.addon.maven.projects.MavenPluginFacet;
-
-import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 
 @Singleton

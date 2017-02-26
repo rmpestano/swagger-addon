@@ -65,6 +65,7 @@ public class SwaggerGenerateCommandTest {
             pom.setContents(pomContents());
         }
         shellTest.clearScreen();
+        shellTest.getShell().setCurrentResource(project.getRoot());
     }
 
     @After
@@ -74,9 +75,9 @@ public class SwaggerGenerateCommandTest {
 
     @Test
     public void shouldGenerateSwaggerResources() throws Exception {
-        shellTest.getShell().setCurrentResource(project.getRoot());
         Result result = shellTest.execute("swagger-setup", 25, TimeUnit.SECONDS);
         Assert.assertThat(result, not(instanceOf(Failed.class)));
+        Assert.assertThat(result.getMessage(), is(equalTo("Swagger setup completed successfully!")));
         Assert.assertTrue(project.hasFacet(SwaggerFacet.class));
         Assert.assertThat(project.getFacet(SwaggerFacet.class).hasSwaggerUIResources(), is(true));
         addPersonEndpoint();
@@ -88,7 +89,6 @@ public class SwaggerGenerateCommandTest {
 
     @Test
     public void shouldGenerateSwaggerResourcesInDifferentFolder() throws Exception {
-        shellTest.getShell().setCurrentResource(project.getRoot());
         Result result = shellTest.execute("swagger-setup --resources-dir rest", 15, TimeUnit.SECONDS);
         Assert.assertThat(result, not(instanceOf(Failed.class)));
         Assert.assertTrue(project.hasFacet(SwaggerFacet.class));

@@ -52,7 +52,7 @@ public class SwaggerFacetImpl extends AbstractFacet<Project> implements SwaggerF
             analyzerBuilder = MavenPluginBuilder.create().setCoordinate(dependencyUtil.getLatestAnalyzerVersion());
             analyzerBuilder.addExecution(ExecutionBuilder.create()
                     .addGoal("analyze-jaxrs")
-                    .setPhase("generate-resources"));
+                    .setPhase("package"));
             ConfigurationElement backend = ConfigurationElementBuilder.create()
                     .createConfigurationElement("backend")
                     .setText("swagger");

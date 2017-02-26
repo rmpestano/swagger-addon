@@ -64,7 +64,7 @@ public class SwaggerSetupCommandTest {
 
     @Before
     public void setUp() throws IOException {
-         project = projectFactory.createTempProject();
+        project = projectFactory.createTempProject();
         FileResource<?> pom = (FileResource<?>) project.getRoot().getChild("pom.xml");
         if (!pom.getContents().contains("build")) {
             pom.setContents(TestUtil.pomContents());
@@ -171,7 +171,7 @@ public class SwaggerSetupCommandTest {
             assertEquals(execConfig.getChildCount(), 2);
             assertEquals(execConfig.getChild("backend").getValue(), "swagger");
             String projectFinalName = project.getFacet(MavenFacet.class).getModel().getBuild().getFinalName();
-            assertEquals(execConfig.getChild("resourcesDir").getValue(), projectFinalName+"/apidocs");
+            assertEquals(execConfig.getChild("resourcesDir").getValue(), projectFinalName + "/apidocs");
         }
     }
 
