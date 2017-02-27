@@ -29,7 +29,7 @@ public class SwaggerFacetImpl extends AbstractFacet<Project> implements SwaggerF
 
     public static final String ANALYZER_GOAL = "analyze-jaxrs";
 
-    public static final String ANALYZER_PHASE = "process-test-resources";
+    public static final String ANALYZER_PHASE = "process-test-classes";
 
 
     @Inject
