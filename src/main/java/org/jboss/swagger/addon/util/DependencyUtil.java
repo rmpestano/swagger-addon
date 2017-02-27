@@ -6,7 +6,6 @@ import org.jboss.forge.addon.dependencies.builder.DependencyQueryBuilder;
 import org.jboss.swagger.addon.facet.SwaggerFacetImpl;
 
 import javax.inject.Inject;
-import java.util.Comparator;
 
 /**
  * Created by rmpestano on 25/02/17.

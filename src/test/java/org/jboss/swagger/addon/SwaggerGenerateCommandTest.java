@@ -3,6 +3,7 @@ package org.jboss.swagger.addon;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.forge.addon.facets.FacetFactory;
+import org.jboss.forge.addon.maven.projects.MavenFacet;
 import org.jboss.forge.addon.projects.Project;
 import org.jboss.forge.addon.projects.ProjectFactory;
 import org.jboss.forge.addon.resource.DirectoryResource;
@@ -27,6 +28,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import static org.jboss.swagger.addon.TestUtil.pomContents;
@@ -78,29 +80,38 @@ public class SwaggerGenerateCommandTest {
         Result result = shellTest.execute("swagger-setup", 25, TimeUnit.SECONDS);
         Assert.assertThat(result, not(instanceOf(Failed.class)));
         Assert.assertThat(result.getMessage(), is(equalTo("Swagger setup completed successfully!")));
+        project = projectFactory.findProject(project.getRoot());
         Assert.assertTrue(project.hasFacet(SwaggerFacet.class));
         Assert.assertThat(project.getFacet(SwaggerFacet.class).hasSwaggerUIResources(), is(true));
         addPersonEndpoint();
+        MavenFacet maven = project.getFacet(MavenFacet.class);
+        maven.executeMaven(Arrays.asList("compile"));//compile added endpoint
         result = shellTest.execute("swagger-generate", 60, TimeUnit.SECONDS);
         Assert.assertThat(result, not(instanceOf(Failed.class)));
         Assert.assertThat(project.getRoot().reify(DirectoryResource.class)
-                .getChild("src/main/webapp/apidocs").getChild("swagger.json").exists(), is(true));
+                .getChild("target/cdi-crud/apidocs").getChild("swagger.json").exists(), is(true));
     }
 
     @Test
     public void shouldGenerateSwaggerResourcesInDifferentFolder() throws Exception {
         Result result = shellTest.execute("swagger-setup --resources-dir rest", 15, TimeUnit.SECONDS);
         Assert.assertThat(result, not(instanceOf(Failed.class)));
+        project = projectFactory.findProject(project.getRoot());
         Assert.assertTrue(project.hasFacet(SwaggerFacet.class));
         Assert.assertThat(project.getFacet(SwaggerFacet.class).hasSwaggerUIResources(), is(true));
         addPersonEndpoint();
+        MavenFacet maven = project.getFacet(MavenFacet.class);
+        maven.executeMaven(Arrays.asList("compile"));//compile added endpoint
         result = shellTest.execute("swagger-generate", 60, TimeUnit.SECONDS);
         Assert.assertThat(result, not(instanceOf(Failed.class)));
-        Assert.assertThat(project.getRoot().reify(DirectoryResource.class).getChild("src/main/webapp/rest/apidocs").getChild("service.json").exists(), is(true));
+        Assert.assertThat(project.getRoot().reify(DirectoryResource.class).getChild("target/cdi-crud/rest").getChild("swagger.json").exists(), is(true));
     }
 
     private void addPersonEndpoint() throws FileNotFoundException {
-        DirectoryResource resource = project.getRoot().reify(DirectoryResource.class).getOrCreateChildDirectory("src").getOrCreateChildDirectory("main").getOrCreateChildDirectory("java");
+        DirectoryResource resource = project.getRoot().reify(DirectoryResource.class).getOrCreateChildDirectory("src")
+                .getOrCreateChildDirectory("main")
+                .getOrCreateChildDirectory("java")
+                .getOrCreateChildDirectory("swagger");
         FileResource<?> personEndpoint = (FileResource<?>) resource.getChild("PersonEndpoint.java");
         personEndpoint.setContents(new FileInputStream(new File(Paths.get("").toAbsolutePath() + "/target/test-classes/PersonEndpoint.java")));
     }

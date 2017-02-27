@@ -29,6 +29,9 @@ public class SwaggerFacetImpl extends AbstractFacet<Project> implements SwaggerF
 
     public static final String ANALYZER_GOAL = "analyze-jaxrs";
 
+    public static final String ANALYZER_PHASE = "process-test-resources";
+
+
     @Inject
     DependencyUtil dependencyUtil;
 
@@ -52,13 +55,13 @@ public class SwaggerFacetImpl extends AbstractFacet<Project> implements SwaggerF
             analyzerBuilder = MavenPluginBuilder.create().setCoordinate(dependencyUtil.getLatestAnalyzerVersion());
             analyzerBuilder.addExecution(ExecutionBuilder.create()
                     .addGoal("analyze-jaxrs")
-                    .setPhase("package"));
+                    .setPhase(ANALYZER_PHASE));
             ConfigurationElement backend = ConfigurationElementBuilder.create()
                     .createConfigurationElement("backend")
                     .setText("swagger");
             ConfigurationElement resourcesDir = ConfigurationElementBuilder.create()
                     .createConfigurationElement("resourcesDir")
-                    .setText(resolveProjectName() + "/apidocs");
+                    .setText((resolveProjectName() + "/"+configuration.getResourcesDir()).replaceAll("//","/"));
             analyzerBuilder.createConfiguration()
                     .addConfigurationElement(backend)
                     .addConfigurationElement(resourcesDir);
@@ -106,7 +109,7 @@ public class SwaggerFacetImpl extends AbstractFacet<Project> implements SwaggerF
     @Override
     public void generateSwaggerResources() {
         MavenFacet maven = getFaceted().getFacet(MavenFacet.class);
-        maven.executeMaven(Arrays.asList("generate-resources"));
+        maven.executeMaven(Arrays.asList(ANALYZER_PHASE));
     }
 
     public boolean hasSwaggerUIResources() {

@@ -93,20 +93,13 @@ public class SwaggerSetupCommandTest {
         }
     }
 
-    @Test
-    public void checkCommandShell() throws Exception {
-        shellTest.getShell().setCurrentResource(project.getRoot());
-        Result result = shellTest.execute("swagger-setup", 15, TimeUnit.SECONDS);
-        Assert.assertThat(result, not(instanceOf(Failed.class)));
-        Assert.assertTrue(project.hasFacet(SwaggerFacet.class));
-        Assert.assertThat(project.getFacet(SwaggerFacet.class).hasSwaggerUIResources(), is(true));
-    }
 
     @Test
     public void checkCommandShellGeneratingSwaggerResources() throws Exception {
         shellTest.getShell().setCurrentResource(project.getRoot());
         Result result = shellTest.execute("swagger-setup", 15, TimeUnit.SECONDS);
         Assert.assertThat(result, not(instanceOf(Failed.class)));
+        project = projectFactory.findProject(project.getRoot());
         Assert.assertTrue(project.hasFacet(SwaggerFacet.class));
         Assert.assertThat(project.getFacet(SwaggerFacet.class).hasSwaggerUIResources(), is(true));
     }
@@ -127,6 +120,7 @@ public class SwaggerSetupCommandTest {
             });
             controller.execute();
             Assert.assertTrue(flag.get());
+            project = projectFactory.findProject(project.getRoot());
             SwaggerFacet facet = project.getFacet(SwaggerFacet.class);
             Assert.assertTrue(facet.isInstalled());
 
@@ -136,7 +130,7 @@ public class SwaggerSetupCommandTest {
             Assert.assertEquals(1, swaggerPlugin.getExecutions().size());
             PluginExecution exec = swaggerPlugin.getExecutions().get(0);
             assertEquals(exec.getGoals().get(0), "analyze-jaxrs");
-            assertEquals(exec.getPhase(), "generate-resources");
+            assertEquals(exec.getPhase(), SwaggerFacetImpl.ANALYZER_PHASE);
         }
     }
 
@@ -158,6 +152,7 @@ public class SwaggerSetupCommandTest {
             });
             controller.execute();
             Assert.assertTrue(flag.get());
+            project = projectFactory.findProject(project.getRoot());
             SwaggerFacet facet = project.getFacet(SwaggerFacet.class);
             Assert.assertTrue(facet.isInstalled());
 
@@ -167,11 +162,11 @@ public class SwaggerSetupCommandTest {
             Assert.assertEquals(1, swaggerPlugin.getExecutions().size());
             PluginExecution exec = swaggerPlugin.getExecutions().get(0);
             assertEquals(exec.getGoals().get(0), SwaggerFacetImpl.ANALYZER_GOAL);
-            Xpp3Dom execConfig = (Xpp3Dom) exec.getConfiguration();
-            assertEquals(execConfig.getChildCount(), 2);
-            assertEquals(execConfig.getChild("backend").getValue(), "swagger");
+            Xpp3Dom pluginConfig = (Xpp3Dom) swaggerPlugin.getConfiguration();
+            assertEquals(pluginConfig.getChildCount(), 2);
+            assertEquals(pluginConfig.getChild("backend").getValue(), "swagger");
             String projectFinalName = project.getFacet(MavenFacet.class).getModel().getBuild().getFinalName();
-            assertEquals(execConfig.getChild("resourcesDir").getValue(), projectFinalName + "/apidocs");
+            assertEquals(pluginConfig.getChild("resourcesDir").getValue(), projectFinalName + "/apidocs");
         }
     }
 
@@ -193,19 +188,20 @@ public class SwaggerSetupCommandTest {
             });
             controller.execute();
             assertTrue(flag.get());
+            project = projectFactory.findProject(project.getRoot());
             SwaggerFacet facet = project.getFacet(SwaggerFacet.class);
             assertTrue(facet.isInstalled());
 
             MavenPluginAdapter swaggerPlugin = (MavenPluginAdapter) project.getFacet(MavenPluginFacet.class)
                     .getEffectivePlugin(SwaggerFacetImpl.ANALYZER_PLUGIN_COORDINATE);
-            assertEquals("maven-javadoc-plugin", swaggerPlugin.getCoordinate().getArtifactId());
+            assertEquals("jaxrs-analyzer-maven-plugin", swaggerPlugin.getCoordinate().getArtifactId());
             assertEquals(1, swaggerPlugin.getExecutions().size());
             PluginExecution analyzerExecution = swaggerPlugin.getExecutions().get(0);
             assertEquals(SwaggerFacetImpl.ANALYZER_GOAL, analyzerExecution.getGoals().get(0));
-            Xpp3Dom pluginExecConfig = (Xpp3Dom) analyzerExecution.getConfiguration();
+            Xpp3Dom pluginConfig = (Xpp3Dom) swaggerPlugin.getConfiguration();
             String projectFinalName = project.getFacet(MavenFacet.class).getModel().getBuild().getFinalName();
-            assertEquals(pluginExecConfig.getChild("backend").getValue(), "swagger");
-            assertEquals(pluginExecConfig.getChild("resourcesDir").getValue(), projectFinalName + "/apidocs");
+            assertEquals(pluginConfig.getChild("backend").getValue(), "swagger");
+            assertEquals(pluginConfig.getChild("resourcesDir").getValue(), projectFinalName + "/apidocs");
         }
     }
 
