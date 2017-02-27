@@ -17,7 +17,10 @@ public class DependencyUtil {
 
      public Coordinate getLatestAnalyzerVersion() {
          return resolver.resolveVersions(DependencyQueryBuilder.create(SwaggerFacetImpl.ANALYZER_PLUGIN_COORDINATE))
-                 .stream().reduce((a, b) -> b).orElse(null);
+                 .stream()
+                 .filter(d -> !d.getVersion().contains("SNAPSHOT"))
+                 .reduce((a, b) -> b)
+                 .orElse(null);
      }
 
 }
