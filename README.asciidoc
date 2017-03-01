@@ -38,6 +38,6 @@ It will invoke a maven goal to activate the maven plugin that will generate swag
 === Features
 
 * Configures maven plugin to generate REST api based on http://swagger.io/[Swagger^] 2.0 specification.
-* Adds swagger-ui artifacts 
+* Adds https://github.com/swagger-api/swagger-ui[swagger-ui 2.2.5^] artifacts 
 * Generates swagger spec files based on JAXRS annotation through https://github.com/sdaschner/jaxrs-analyzer[JaxRS Analyzer^].
 
