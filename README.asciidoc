@@ -7,7 +7,7 @@ This forge addon enables a fast way to configure and generate Swagger spec files
 
 === Demo
 
-image:http://img.youtube.com/vi/Gwc3jYb2MJA/0.jpg[Demo, link=https://www.youtube.com/watch?v=Gwc3jYb2MJA, window="_blank"]
+image:http://img.youtube.com/vi/aKShM1AUbIU/0.jpg[Demo, link=https://youtu.be/aKShM1AUbIU, window="_blank"]
  
         
 === Dependencies: None 
