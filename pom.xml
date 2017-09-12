@@ -8,7 +8,7 @@
     <properties>
         <jacoco.version>0.7.4.201502262128</jacoco.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <version.forge>3.5.1.Final</version.forge>
+        <version.forge>3.7.2.Final</version.forge>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
@@ -18,13 +18,6 @@
                 <groupId>org.jboss.forge</groupId>
                 <artifactId>forge-bom</artifactId>
                 <version>${version.forge}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.spec</groupId>
-                <artifactId>jboss-javaee-6.0</artifactId>
-                <version>3.0.3.Final</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -64,22 +57,12 @@
         </dependency>
         <dependency>
             <groupId>org.jboss.forge.furnace.test</groupId>
-            <artifactId>furnace-test-harness</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.forge.furnace.test</groupId>
             <artifactId>arquillian-furnace-classpath</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.jboss.forge.furnace.test</groupId>
             <artifactId>furnace-test-harness</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.forge.furnace.test</groupId>
-            <artifactId>arquillian-furnace-classpath</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
