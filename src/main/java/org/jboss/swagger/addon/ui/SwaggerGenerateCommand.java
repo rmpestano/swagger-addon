@@ -6,9 +6,10 @@
  */
 package org.jboss.swagger.addon.ui;
 
+import javax.inject.Inject;
+
 import org.jboss.forge.addon.facets.constraints.FacetConstraint;
 import org.jboss.forge.addon.projects.ProjectFactory;
-import org.jboss.forge.addon.projects.facets.MetadataFacet;
 import org.jboss.forge.addon.projects.ui.AbstractProjectCommand;
 import org.jboss.forge.addon.ui.context.UIBuilder;
 import org.jboss.forge.addon.ui.context.UIContext;
@@ -20,8 +21,6 @@ import org.jboss.forge.addon.ui.util.Categories;
 import org.jboss.forge.addon.ui.util.Metadata;
 import org.jboss.swagger.addon.facet.SwaggerFacet;
 
-import javax.inject.Inject;
-
 /**
  * Swagger: Generate command
  *
@@ -30,35 +29,35 @@ import javax.inject.Inject;
 @FacetConstraint({ SwaggerFacet.class })
 public class SwaggerGenerateCommand extends AbstractProjectCommand {
 
-  @Inject
-  private ProjectFactory projectFactory;
+	@Inject
+	private ProjectFactory projectFactory;
 
-  @Override
-  public UICommandMetadata getMetadata(UIContext context) {
-    return Metadata.forCommand(SwaggerGenerateCommand.class).name("Swagger: Generate").
-            category(Categories.create("Swagger")).
-            description("Generate Swagger spec files (in /target/resourcesDir) for JAXRS endpoints of project " + getSelectedProject(context) != null ? getSelectedProject(context).getFacet(MetadataFacet.class).getProjectName().toUpperCase():"");
-  }
+	@Override
+	public UICommandMetadata getMetadata(UIContext context) {
+		return Metadata.forCommand(SwaggerGenerateCommand.class).name("Swagger: Generate")
+				.category(Categories.create("Swagger")).description(
+						"Generate Swagger spec files (in /target/resourcesDir) for JAX-RS endpoints in the current project");
+	}
 
-  @Override
-  public void initializeUI(UIBuilder uiBuilder) throws Exception {
+	@Override
+	public void initializeUI(UIBuilder uiBuilder) throws Exception {
 
-  }
+	}
 
-  @Override
-  public Result execute(UIExecutionContext context) {
-    getSelectedProject(context).getFacet(SwaggerFacet.class).generateSwaggerResources();
-    return Results.success("Swagger generate command executed successfuly!");
-  }
+	@Override
+	public Result execute(UIExecutionContext context) {
+		getSelectedProject(context).getFacet(SwaggerFacet.class).generateSwaggerResources();
+		return Results.success("Swagger generate command executed successfuly!");
+	}
 
-  @Override
-  protected ProjectFactory getProjectFactory() {
-    return projectFactory;
-  }
+	@Override
+	protected ProjectFactory getProjectFactory() {
+		return projectFactory;
+	}
 
-  @Override
-  protected boolean isProjectRequired() {
-    return true;
-  }
+	@Override
+	protected boolean isProjectRequired() {
+		return true;
+	}
 
 }
